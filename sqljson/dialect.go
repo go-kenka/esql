@@ -5,9 +5,10 @@
 package sqljson
 
 import (
-	"esql"
 	"fmt"
 	"reflect"
+
+	"github.com/go-kenka/esql"
 )
 
 type sqlite struct{}

@@ -5,12 +5,11 @@
 package sqljson_test
 
 import (
-	"esql"
 	"strconv"
 	"testing"
 
-	"esql/sqljson"
-
+	"github.com/go-kenka/esql"
+	"github.com/go-kenka/esql/sqljson"
 	"github.com/stretchr/testify/require"
 )
 

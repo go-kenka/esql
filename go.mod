@@ -1,4 +1,4 @@
-module esql
+module github.com/go-kenka/esql
 
 go 1.19
 

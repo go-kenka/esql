@@ -6,10 +6,11 @@ package sqljson
 
 import (
 	"encoding/json"
-	"esql"
 	"fmt"
 	"strings"
 	"unicode"
+
+	"github.com/go-kenka/esql"
 )
 
 // HasKey return a predicate for checking that a JSON key
