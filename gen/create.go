@@ -34,6 +34,7 @@ func genCreate(base string, t *Table) error {
 	if err != nil {
 		return err
 	}
+	defer fs.Close()
 
 	return tmp.Execute(fs, t)
 }

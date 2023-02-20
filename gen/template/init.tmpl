@@ -1,0 +1,21 @@
+package schema
+
+import (
+	. "github.com/go-kenka/esql/dsl"
+)
+
+var _ = Table("{{.}}",
+	Desc("{{.}}"),
+	Fields(
+		Field("id",
+			Tag("db:\"id\""),
+			TypeInfo(TypeInt),
+			Unique(true),
+			Nillable(false),
+			Default(0),
+			Comment("ID"),
+		),
+	),
+	Edges(
+	),
+)

@@ -57,7 +57,11 @@ type {{.Name | camelCase}}Client struct {
 type {{.Name | camelCase}}Data struct {
     {{- range $i,$e := .Edges}}
     {{- if eq $e.To "" }}
-    *{{$.Name | camelCase}}Edge{{$e.From | camelCase}}Data
+	{{- if or (eq $e.Type 1) (eq $e.Type 3)}}
+	{{$e.From | camelCase}}List []*{{$.Name | camelCase}}Edge{{$e.From | camelCase}}Data
+	{{else}}
+	*{{$.Name | camelCase}}Edge{{$e.From | camelCase}}Data
+    {{- end -}}
     {{- end -}}
     {{- end -}}
     {{range $i,$f := .Fields}}
@@ -68,7 +72,11 @@ type {{.Name | camelCase}}Data struct {
 {{range $i,$e := .Edges}}
 {{- if eq $e.To "" -}}
 func (d *{{$.Name | camelCase}}Data) Has{{$e.From | camelCase}}() bool {
+	{{- if or (eq $e.Type 1) (eq $e.Type 3)}}
+	return d.{{$e.From | camelCase}}List != nil
+	{{else}}
 	return d.{{$.Name | camelCase}}Edge{{$e.From | camelCase}}Data != nil
+	{{- end -}}
 }
 {{- end -}}
 {{- end -}}
@@ -79,6 +87,8 @@ type {{$.Name | camelCase}}Edge{{$e.From | camelCase}}Data struct {
     {{- range $j,$e1 := $.Edges}}
     {{- if eq $e1.To $e.From -}}
     *{{$e1.To | camelCase}}Edge{{$e1.From | camelCase}}Data
+	{{else}}
+	{{$e.Ref | camelCase }} int `db:"{{$e.Ref}}"` // {{$e.Ref}}
     {{- end -}}
     {{- end -}}
 	{{- range $k,$d := $e.Display}}
@@ -121,6 +131,7 @@ func (c *{{.Name | camelCase}}Client) Query() *{{.Name | camelCase}}Query {
 	return &{{.Name | camelCase}}Query{
 		Selector: esql.NewBuilder(c.direct).Select(cols...).From({{.Name | camelCase | lower}}Table),
 		db:       c.db,
+		with: map[string]struct{}{},
 	}
 }
 

@@ -1,6 +1,7 @@
 package gen
 
 import (
+	"github.com/go-kenka/esql/dsl"
 	"github.com/gobeam/stringy"
 	"strings"
 )
@@ -12,7 +13,7 @@ func Lower(str string) string {
 	return strings.ToLower(str)
 }
 
-func GoType(t Type) string {
+func GoType(t dsl.Type) string {
 	return TypeNames[t]
 }
 

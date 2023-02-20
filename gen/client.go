@@ -11,12 +11,13 @@ import (
 
 type Client struct {
 	Tables []*Table
+	Pkg    string
 }
 
 //go:embed template/*
 var tmpl embed.FS
 
-func GenClient(base string, tbs []*Table) error {
+func GenClient(base, pkg string, tbs []*Table) error {
 
 	err := os.MkdirAll(base, os.ModePerm)
 	if err != nil {
@@ -26,8 +27,6 @@ func GenClient(base string, tbs []*Table) error {
 	genFile := filepath.Join(base, "client.go")
 
 	os.Remove(genFile)
-
-	fmt.Printf("生成client的数据成功\n")
 
 	for i, tb := range tbs {
 		fmt.Printf("正在生成第%d【%s】个表的数据\n", i+1, tb.Name)
@@ -64,18 +63,21 @@ func GenClient(base string, tbs []*Table) error {
 
 	data := Client{
 		Tables: tbs,
+		Pkg:    pkg,
 	}
 
 	fs, err := os.OpenFile(genFile, os.O_WRONLY|os.O_CREATE, os.ModePerm)
 	if err != nil {
 		return err
 	}
+	defer fs.Close()
 
 	err = tmp.Execute(fs, &data)
 	if err != nil {
 		return err
 	}
 
+	fmt.Printf("生成client的数据成功\n")
 	return nil
 }
 

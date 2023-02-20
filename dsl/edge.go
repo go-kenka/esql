@@ -2,6 +2,7 @@ package dsl
 
 type EdgeExpr struct {
 	Desc    string
+	Type    EdgeType
 	Link    string
 	From    string
 	To      string
@@ -43,6 +44,12 @@ func To(t string) EdgeFn {
 func Ref(r string) EdgeFn {
 	return func(e *EdgeExpr) {
 		e.Ref = r
+	}
+}
+
+func EType(t EdgeType) EdgeFn {
+	return func(e *EdgeExpr) {
+		e.Type = t
 	}
 }
 

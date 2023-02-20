@@ -9,7 +9,8 @@ import (
 
 type {{.Name | camelCase}}Query struct {
 	*esql.Selector
-	db *sqlx.DB
+	db    *sqlx.DB
+	with  map[string]struct{}
 }
 
 func (q *{{.Name | camelCase}}Query) First(ctx context.Context) (*{{.Name | camelCase}}Data, error) {
@@ -18,6 +19,11 @@ func (q *{{.Name | camelCase}}Query) First(ctx context.Context) (*{{.Name | came
 	err := q.db.GetContext(ctx, &data, query, args...)
 	if err != nil {
 		return nil, err
+	}
+
+	err = q.queryWith(ctx, []*{{.Name | camelCase}}Data{&data})
+	if err != nil {
+	return nil, err
 	}
 
 	return &data, nil
@@ -72,6 +78,11 @@ func (q *{{.Name | camelCase}}Query) AllX(ctx context.Context) ([]*{{.Name | cam
 		return nil, err
 	}
 
+	err = q.queryWith(ctx, data)
+	if err != nil {
+	return nil, err
+	}
+
 	return data, nil
 }
 
@@ -99,36 +110,107 @@ func (q *{{.Name | camelCase}}Query) ExistX(ctx context.Context) (bool, error) {
 
 {{range $i,$e := .Edges}}
 {{- if eq $e.To "" -}}
+{{- if or (eq $e.Type 0) (eq $e.Type 2)}}
 func (q *{{$.Name | camelCase}}Query) With{{$e.From | camelCase}}() *{{$.Name | camelCase}}Query {
 	// 添加Display字段
 	{{- range $j,$d := $e.Display}}
-	q.AppendSelect(edge{{$e.From | camelCase }}Table.C(Edge{{$e.From | camelCase }}Display{{$d.Name | camelCase }}))
+		q.AppendSelect(edge{{$e.From | camelCase }}Table.C(Edge{{$e.From | camelCase }}Display{{$d.Name | camelCase }}))
 	{{- end }}
 	// 添加关系（左连接）
 	q.LeftJoin(edge{{$e.From | camelCase }}Table).
-		On(
-			q.C( Edge{{$e.From | camelCase }}LinkField),
-			edge{{$e.From | camelCase }}Table.C(Edge{{$e.From | camelCase }}RefField),
-		)
+	On(
+	q.C( Edge{{$e.From | camelCase }}LinkField),
+	edge{{$e.From | camelCase }}Table.C(Edge{{$e.From | camelCase }}RefField),
+	)
 
 
-    {{- if eq $e.To "" -}}
-    {{- range $j,$e1 := $.Edges}}
-    {{- if eq $e1.To $e.From -}}
-	{{- range $j,$d := $e1.Display}}
-	// 添加Display字段
-    q.AppendSelect({{$e1.To | camelCase | lower}}Edge{{$e1.From | camelCase }}Table.C({{$e1.To | camelCase}}Edge{{$e1.From | camelCase }}Display{{$d.Name | camelCase }}))
-   	{{- end }}
-   	// 添加关系（左连接）
-	q.LeftJoin({{$e1.To | camelCase | lower}}Edge{{$e1.From | camelCase }}Table).
-		On(
-			edge{{$e.From | camelCase }}Table.C({{$e1.To | camelCase}}Edge{{$e1.From | camelCase }}LinkField),
-			{{$e1.To | camelCase | lower}}Edge{{$e1.From | camelCase }}Table.C({{$e1.To | camelCase}}Edge{{$e1.From | camelCase }}RefField),
-		)
-    {{- end -}}
-    {{- end -}}
+	{{- if eq $e.To "" -}}
+		{{- range $j,$e1 := $.Edges}}
+			{{- if eq $e1.To $e.From -}}
+				{{- range $j,$d := $e1.Display}}
+					// 添加Display字段
+					q.AppendSelect({{$e1.To | camelCase | lower}}Edge{{$e1.From | camelCase }}Table.C({{$e1.To | camelCase}}Edge{{$e1.From | camelCase }}Display{{$d.Name | camelCase }}))
+				{{- end }}
+				// 添加关系（左连接）
+				q.LeftJoin({{$e1.To | camelCase | lower}}Edge{{$e1.From | camelCase }}Table).
+				On(
+				edge{{$e.From | camelCase }}Table.C({{$e1.To | camelCase}}Edge{{$e1.From | camelCase }}LinkField),
+				{{$e1.To | camelCase | lower}}Edge{{$e1.From | camelCase }}Table.C({{$e1.To | camelCase}}Edge{{$e1.From | camelCase }}RefField),
+				)
+			{{- end -}}
+		{{- end -}}
 	{{ end }}
 	return q
 }
+func (q *{{$.Name | camelCase}}Query) queryWith(ctx context.Context, data []*{{$.Name | camelCase}}Data) error {
+	return nil
+}
+{{else}}
+func (q *{{$.Name | camelCase}}Query) With{{$e.From | camelCase}}List() *{{$.Name | camelCase}}Query {
+	q.with["{{$e.From}}"] = struct{}{}
+	return q
+}
+
+func (q *{{$.Name | camelCase}}Query) UserQuery() *esql.Selector {
+	var cols []string
+	cols = append(cols, edge{{$e.From | camelCase}}Table.C(Edge{{$e.From | camelCase}}RefField))
+	{{- range $j,$d := $e.Display}}
+	cols = append(cols, edge{{$e.From | camelCase}}Table.C(Edge{{$e.From | camelCase}}Display{{$d.Name | camelCase}}))
+	{{end}}
+
+	return esql.NewBuilder(q.db.DriverName()).Select(cols...).From(edge{{$e.From | camelCase}}Table)
+}
+
+
+func (q *{{$.Name | camelCase}}Query) queryWith(ctx context.Context, data []*{{$.Name | camelCase}}Data) error {
+	if _, ok := q.with["{{$e.From}}"]; ok {
+		var ids []int
+		for _, datum := range data {
+			ids = append(ids, datum.Id)
+		}
+
+		query, args := q.UserQuery().Where(esql.InInts(Edge{{$e.From | camelCase}}RefField, ids...)).OrderBy(esql.Desc(Edge{{$e.From | camelCase}}RefField)).Query()
+		var {{$e.From | camelCase | lower}}Data []*{{$.Name | camelCase}}Edge{{$e.From | camelCase}}Data
+		err := q.db.SelectContext(ctx, &{{$e.From | camelCase | lower}}Data, query, args...)
+		if err != nil {
+			return err
+		}
+
+		{{$e.From | camelCase | lower}}Map := make(map[int][]*{{$.Name | camelCase}}Edge{{$e.From | camelCase}}Data)
+
+		var withData []*{{$.Name | camelCase}}Edge{{$e.From | camelCase}}Data
+		var lastId int
+		for i, a := range {{$e.From | camelCase | lower}}Data {
+			if i == 0 {
+				withData = append(withData, a)
+				lastId = a.{{$e.Ref | camelCase}}
+				continue
+			}
+
+			if a.{{$e.Ref | camelCase}} == lastId {
+				withData = append(withData, a)
+				continue
+			}
+
+			// 下一条
+			{
+				// 添加数据到map中
+				{{$e.From | camelCase | lower}}Map[lastId] = append({{$e.From | camelCase | lower}}Map[lastId], withData...)
+				// 更新lastId
+				lastId = a.{{$e.Ref | camelCase}}
+				// 清空data，并传入当前值
+				withData = nil
+				withData = append(withData, a)
+			}
+		}
+
+		for _, d := range data {
+			d.{{$e.From | camelCase}}List = {{$e.From | camelCase | lower}}Map[d.Id]
+		}
+	}
+
+	return nil
+}
+{{ end }}
 {{ end }}
 {{ end }}

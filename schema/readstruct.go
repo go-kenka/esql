@@ -166,6 +166,8 @@ func readEdgeFn(edge *gen.Edge, call *ast.CallExpr) {
 		switch fun.Name {
 		case "Link":
 			readEdgeLink(edge, call.Args[0])
+		case "EType":
+			readEdgeType(edge, call.Args[0])
 		case "From":
 			readEdgeFrom(edge, call.Args[0])
 		case "To":
@@ -182,6 +184,12 @@ func readEdgeFn(edge *gen.Edge, call *ast.CallExpr) {
 func readEdgeLink(edge *gen.Edge, arg ast.Expr) {
 	if d, ok := arg.(*ast.BasicLit); ok {
 		edge.Link = getStringValue(d)
+	}
+}
+
+func readEdgeType(edge *gen.Edge, arg ast.Expr) {
+	if d, ok := arg.(*ast.Ident); ok {
+		edge.Type = gen.EdgeTypeNameMap[d.Name]
 	}
 }
 
