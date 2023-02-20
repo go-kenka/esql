@@ -2,6 +2,7 @@ package uitls
 
 import (
 	"bytes"
+	"encoding/json"
 	"os"
 	"os/exec"
 	"path"
@@ -23,14 +24,29 @@ func GoFmt(p string) error {
 }
 
 func PkgPath(p string) string {
-	cmd := exec.Command("go", "list", "-m")
-	var stdout, stderr bytes.Buffer
+	local, _ := os.Getwd()
+	cmd := exec.Command("go", "list", "-m", "-json")
+	var stdout bytes.Buffer
 	cmd.Stdout = &stdout // 标准输出
-	cmd.Stderr = &stderr // 标准错误
 	err := cmd.Run()
-	outStr, _ := string(stdout.Bytes()), string(stderr.Bytes())
+	outStr := string(stdout.Bytes())
 	if err != nil {
 		return ""
 	}
-	return path.Join(strings.Replace(outStr, "\n", "", -1), p)
+
+	var mod struct {
+		Path      string
+		Main      bool
+		Dir       string
+		GoMod     string
+		GoVersion string
+	}
+
+	err = json.Unmarshal([]byte(outStr), &mod)
+	if err != nil {
+		return ""
+	}
+
+	relPath := strings.Replace(local, mod.Dir, mod.Path, -1)
+	return path.Join(filepath.ToSlash(relPath), p)
 }
