@@ -27,7 +27,7 @@ const (
 )
 
 var (
-	TypeNames = [...]string{
+	TypeGoNames = [...]string{
 		TypeInvalid: "invalid",
 		TypeBool:    "bool",
 		TypeTime:    "time.Time",
@@ -49,6 +49,30 @@ var (
 		TypeUint64:  "uint64",
 		TypeFloat32: "float32",
 		TypeFloat64: "float64",
+	}
+
+	TypeNames = [...]string{
+		TypeInvalid: "TypeInvalid",
+		TypeBool:    "TypeBool",
+		TypeTime:    "TypeTime",
+		TypeJSON:    "TypeJSON",
+		TypeUUID:    "TypeUUID",
+		TypeBytes:   "TypeBytes",
+		TypeEnum:    "TypeEnum",
+		TypeString:  "TypeString",
+		TypeOther:   "TypeOther",
+		TypeInt:     "TypeInt",
+		TypeInt8:    "TypeInt8",
+		TypeInt16:   "TypeInt16",
+		TypeInt32:   "TypeInt32",
+		TypeInt64:   "TypeInt64",
+		TypeUint:    "TypeUint",
+		TypeUint8:   "TypeUint8",
+		TypeUint16:  "TypeUint16",
+		TypeUint32:  "TypeUint32",
+		TypeUint64:  "TypeUint64",
+		TypeFloat32: "TypeFloat32",
+		TypeFloat64: "TypeFloat64",
 	}
 
 	TypeNameMap = map[string]dsl.Type{

@@ -4,8 +4,10 @@ package sql
 import (
 	"fmt"
 	"entgo.io/ent/dialect"
+	"entgo.io/ent/dialect/sql"
 	"github.com/jmoiron/sqlx"
 
+	"{{$.Pkg}}/migrate"
 	{{- range $i,$t := .Tables }}
 	"{{$.Pkg}}/{{$t.Name}}"
 	{{- end }}
@@ -13,6 +15,8 @@ import (
 
 // Client .
 type Client struct {
+	Builder *sql.DialectBuilder
+	Schema *migrate.Schema
     {{- range $i,$t := .Tables }}
 	{{$t.Name | camelCase}} *{{$t.Name}}.{{$t.Name | camelCase}}Client
 	{{- end }}
@@ -20,7 +24,10 @@ type Client struct {
 
 // NewClient .
 func NewClient(db *sqlx.DB) *Client {
+	drv := migrate.Driver(db)
 	return &Client{
+		Builder: sql.Dialect(db.DriverName()),
+		Schema: migrate.NewSchema(drv),
 		{{- range $i,$t := .Tables }}
 		{{$t.Name | camelCase}}: {{$t.Name}}.New{{$t.Name | camelCase}}Client(db),
 		{{- end }}

@@ -3,23 +3,31 @@ package sql
 
 import (
 	"entgo.io/ent/dialect"
+	"entgo.io/ent/dialect/sql"
 	"fmt"
+	"github.com/jmoiron/sqlx"
+
+	"github.com/go-kenka/esql/examples/data/migrate"
 	"github.com/go-kenka/esql/examples/data/role"
 	"github.com/go-kenka/esql/examples/data/user"
-	"github.com/jmoiron/sqlx"
 )
 
 // Client .
 type Client struct {
-	Role *role.RoleClient
-	User *user.UserClient
+	Builder *sql.DialectBuilder
+	Schema  *migrate.Schema
+	Role    *role.RoleClient
+	User    *user.UserClient
 }
 
 // NewClient .
 func NewClient(db *sqlx.DB) *Client {
+	drv := migrate.Driver(db)
 	return &Client{
-		Role: role.NewRoleClient(db),
-		User: user.NewUserClient(db),
+		Builder: sql.Dialect(db.DriverName()),
+		Schema:  migrate.NewSchema(drv),
+		Role:    role.NewRoleClient(db),
+		User:    user.NewUserClient(db),
 	}
 }
 

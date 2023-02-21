@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"reflect"
 	"text/template"
 )
 
@@ -48,6 +47,19 @@ func GenClient(base, pkg string, tbs []*Table) error {
 		fmt.Printf("正在生成第%d个表的数据生成成功\n", i+1)
 	}
 
+	data := Client{
+		Tables: tbs,
+		Pkg:    pkg,
+	}
+	fmt.Printf("正在生成migrate的数据\n")
+	if err := genMigrate(base, &data); err != nil {
+		return err
+	}
+	if err := genSchema(base, &data); err != nil {
+		return err
+	}
+	fmt.Printf("生成migrate的数据成功\n")
+
 	fmt.Printf("正在生成client的数据\n")
 
 	tmp := template.New("client.tmpl")
@@ -59,11 +71,6 @@ func GenClient(base, pkg string, tbs []*Table) error {
 	tmp, err = tmp.ParseFS(tmpl, "template/client.tmpl")
 	if err != nil {
 		return err
-	}
-
-	data := Client{
-		Tables: tbs,
-		Pkg:    pkg,
 	}
 
 	fs, err := os.OpenFile(genFile, os.O_WRONLY|os.O_CREATE, os.ModePerm)
@@ -79,9 +86,4 @@ func GenClient(base, pkg string, tbs []*Table) error {
 
 	fmt.Printf("生成client的数据成功\n")
 	return nil
-}
-
-func getPkg() string {
-	_, pkg := filepath.Split(reflect.TypeOf(Client{}).PkgPath())
-	return pkg
 }
