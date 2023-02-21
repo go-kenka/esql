@@ -14,6 +14,7 @@ import (
 
 // Client .
 type Client struct {
+	DB      *sqlx.DB
 	Builder *sql.DialectBuilder
 	Schema  *migrate.Schema
 	Role    *role.RoleClient
@@ -24,6 +25,7 @@ type Client struct {
 func NewClient(db *sqlx.DB) *Client {
 	drv := migrate.Driver(db)
 	return &Client{
+		DB:      db,
 		Builder: sql.Dialect(db.DriverName()),
 		Schema:  migrate.NewSchema(drv),
 		Role:    role.NewRoleClient(db),

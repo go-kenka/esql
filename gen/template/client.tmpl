@@ -15,6 +15,7 @@ import (
 
 // Client .
 type Client struct {
+	DB      *sqlx.DB
 	Builder *sql.DialectBuilder
 	Schema *migrate.Schema
     {{- range $i,$t := .Tables }}
@@ -26,6 +27,7 @@ type Client struct {
 func NewClient(db *sqlx.DB) *Client {
 	drv := migrate.Driver(db)
 	return &Client{
+		DB:      db,
 		Builder: sql.Dialect(db.DriverName()),
 		Schema: migrate.NewSchema(drv),
 		{{- range $i,$t := .Tables }}
