@@ -3,13 +3,13 @@ package role
 
 import (
 	"context"
-	"github.com/go-kenka/esql"
+	"entgo.io/ent/dialect/sql"
 	"github.com/jmoiron/sqlx"
 )
 
 type RoleCreate struct {
-	builder  *esql.InsertBuilder
-	selector *esql.Selector
+	builder  *sql.InsertBuilder
+	selector *sql.Selector
 	db       *sqlx.DB
 	data     *RoleData
 }
@@ -43,7 +43,7 @@ func (c *RoleCreate) sql() (string, []any) {
 }
 
 func (c *RoleCreate) get(ctx context.Context, id int) (*RoleData, error) {
-	query, args := c.selector.Where(esql.EQ(ColumnId, id)).Query()
+	query, args := c.selector.Where(sql.EQ(ColumnId, id)).Query()
 	var data RoleData
 
 	err := c.db.GetContext(ctx, &data, query, args...)
@@ -56,7 +56,7 @@ func (c *RoleCreate) get(ctx context.Context, id int) (*RoleData, error) {
 
 type RoleCreateBulk struct {
 	db       *sqlx.DB
-	selector *esql.Selector
+	selector *sql.Selector
 	data     []*RoleCreate
 }
 
@@ -92,7 +92,7 @@ func (cb RoleCreateBulk) sqlSave(ctx context.Context) ([]any, error) {
 }
 
 func (cb RoleCreateBulk) find(ctx context.Context, ids []any) ([]*RoleData, error) {
-	query, args := cb.selector.Where(esql.In(ColumnId, ids...)).Query()
+	query, args := cb.selector.Where(sql.In(ColumnId, ids...)).Query()
 	var data []*RoleData
 	err := cb.db.SelectContext(ctx, data, query, args...)
 	if err != nil {

@@ -8,7 +8,7 @@ import (
 )
 
 func Init(base, name string) error {
-	dir := filepath.Join(base, "schema")
+	dir := filepath.Join(base, "ast")
 	genFile := filepath.Join(fmt.Sprintf("%s/%s.go", dir, name))
 
 	// 生成之前，先删除文件

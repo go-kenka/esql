@@ -3,13 +3,13 @@ package user
 
 import (
 	"context"
-	"github.com/go-kenka/esql"
+	"entgo.io/ent/dialect/sql"
 	"github.com/jmoiron/sqlx"
 )
 
 type UserCreate struct {
-	builder  *esql.InsertBuilder
-	selector *esql.Selector
+	builder  *sql.InsertBuilder
+	selector *sql.Selector
 	db       *sqlx.DB
 	data     *UserData
 }
@@ -43,7 +43,7 @@ func (c *UserCreate) sql() (string, []any) {
 }
 
 func (c *UserCreate) get(ctx context.Context, id int) (*UserData, error) {
-	query, args := c.selector.Where(esql.EQ(ColumnId, id)).Query()
+	query, args := c.selector.Where(sql.EQ(ColumnId, id)).Query()
 	var data UserData
 
 	err := c.db.GetContext(ctx, &data, query, args...)
@@ -56,7 +56,7 @@ func (c *UserCreate) get(ctx context.Context, id int) (*UserData, error) {
 
 type UserCreateBulk struct {
 	db       *sqlx.DB
-	selector *esql.Selector
+	selector *sql.Selector
 	data     []*UserCreate
 }
 
@@ -92,7 +92,7 @@ func (cb UserCreateBulk) sqlSave(ctx context.Context) ([]any, error) {
 }
 
 func (cb UserCreateBulk) find(ctx context.Context, ids []any) ([]*UserData, error) {
-	query, args := cb.selector.Where(esql.In(ColumnId, ids...)).Query()
+	query, args := cb.selector.Where(sql.In(ColumnId, ids...)).Query()
 	var data []*UserData
 	err := cb.db.SelectContext(ctx, data, query, args...)
 	if err != nil {

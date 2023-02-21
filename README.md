@@ -3,7 +3,7 @@
 通过内置的`dsl`语法，实现数据库`sql`和实体之间的映射和相关`CRUD`的实现
 实现本身通过解析`dsl`语法树，解析数据表的相关定义，然后使用`template`实现模板的生成。
 
-抽离了[ent](entgo.io/ent)的builder，并结合[sqlx](github.com/jmoiron/sqlx)实现数据库的相关操作。
+使用[ent](entgo.io/ent)的builder，并结合[sqlx](github.com/jmoiron/sqlx)实现数据库的相关操作。
 
 # 快速开始
 ```shell

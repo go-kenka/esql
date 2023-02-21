@@ -3,12 +3,12 @@ package user
 
 import (
 	"context"
-	"github.com/go-kenka/esql"
+	"entgo.io/ent/dialect/sql"
 	"github.com/jmoiron/sqlx"
 )
 
 type UserQuery struct {
-	*esql.Selector
+	*sql.Selector
 	db   *sqlx.DB
 	with map[string]struct{}
 }

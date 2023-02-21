@@ -2,8 +2,8 @@
 package sql
 
 import (
+	"entgo.io/ent/dialect"
 	"fmt"
-	"github.com/go-kenka/esql"
 	"github.com/go-kenka/esql/examples/data/role"
 	"github.com/go-kenka/esql/examples/data/user"
 	"github.com/jmoiron/sqlx"
@@ -26,7 +26,7 @@ func NewClient(db *sqlx.DB) *Client {
 // Open .
 func Open(driverName, dataSourceName string) (*Client, error) {
 	switch driverName {
-	case esql.MySQL, esql.Postgres, esql.SQLite:
+	case dialect.MySQL, dialect.Postgres, dialect.SQLite:
 		db, err := sqlx.Open(driverName, dataSourceName)
 		if err != nil {
 			return nil, err

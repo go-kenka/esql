@@ -3,12 +3,12 @@ package user
 
 import (
 	"context"
-	"github.com/go-kenka/esql"
+	"entgo.io/ent/dialect/sql"
 	"github.com/jmoiron/sqlx"
 )
 
 type UserUpdate struct {
-	builder *esql.UpdateBuilder
+	builder *sql.UpdateBuilder
 	db      *sqlx.DB
 	data    *UserData
 }
@@ -26,7 +26,7 @@ func (u *UserUpdate) Add(column string, v any) *UserUpdate {
 	return u
 }
 
-func (u *UserUpdate) Where(p *esql.Predicate) *UserUpdate {
+func (u *UserUpdate) Where(p *sql.Predicate) *UserUpdate {
 	u.builder.Where(p)
 	return u
 }
@@ -53,7 +53,7 @@ func (u *UserUpdate) sqlSave(ctx context.Context) ([]*UserData, error) {
 }
 
 type UserUpdateOne struct {
-	builder *esql.UpdateBuilder
+	builder *sql.UpdateBuilder
 	db      *sqlx.DB
 	data    *UserData
 }

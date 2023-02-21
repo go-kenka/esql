@@ -2,7 +2,7 @@
 package role
 
 import (
-	"github.com/go-kenka/esql"
+	"entgo.io/ent/dialect/sql"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -17,8 +17,8 @@ const (
 )
 
 var (
-	roleTable     = esql.Table(TableName).As("t1")
-	edgeUserTable = esql.Table(EdgeUserTableName).As("t2")
+	roleTable     = sql.Table(TableName).As("t1")
+	edgeUserTable = sql.Table(EdgeUserTableName).As("t2")
 )
 
 var Columns = []string{
@@ -60,7 +60,7 @@ func (c *RoleClient) Query() *RoleQuery {
 		cols = append(cols, roleTable.C(column))
 	}
 	return &RoleQuery{
-		Selector: esql.NewBuilder(c.direct).Select(cols...).From(roleTable),
+		Selector: sql.Dialect(c.direct).Select(cols...).From(roleTable),
 		db:       c.db,
 		with:     map[string]struct{}{},
 	}
@@ -68,7 +68,7 @@ func (c *RoleClient) Query() *RoleQuery {
 
 func (c *RoleClient) Create() *RoleCreate {
 	return &RoleCreate{
-		builder: esql.NewBuilder(c.direct).Insert(TableName),
+		builder: sql.Dialect(c.direct).Insert(TableName),
 		db:      c.db,
 		data:    &RoleData{},
 	}
@@ -83,7 +83,7 @@ func (c *RoleClient) CreateBulk(data ...*RoleCreate) *RoleCreateBulk {
 
 func (c *RoleClient) Update() *RoleUpdate {
 	return &RoleUpdate{
-		builder: esql.NewBuilder(c.direct).Update(TableName),
+		builder: sql.Dialect(c.direct).Update(TableName),
 		db:      c.db,
 		data:    &RoleData{},
 	}
@@ -91,7 +91,7 @@ func (c *RoleClient) Update() *RoleUpdate {
 
 func (c *RoleClient) UpdateOne(id int) *RoleUpdateOne {
 	return &RoleUpdateOne{
-		builder: esql.NewBuilder(c.direct).Update(TableName).Where(esql.EQ(ColumnId, id)),
+		builder: sql.Dialect(c.direct).Update(TableName).Where(sql.EQ(ColumnId, id)),
 		db:      c.db,
 		data:    &RoleData{},
 	}
@@ -99,14 +99,14 @@ func (c *RoleClient) UpdateOne(id int) *RoleUpdateOne {
 
 func (c *RoleClient) Delete() *RoleDelete {
 	return &RoleDelete{
-		builder: esql.NewBuilder(c.direct).Delete(TableName),
+		builder: sql.Dialect(c.direct).Delete(TableName),
 		db:      c.db,
 	}
 }
 
 func (c *RoleClient) DeleteOne(id int) *RoleDeleteOne {
 	return &RoleDeleteOne{
-		builder: esql.NewBuilder(c.direct).Delete(TableName).Where(esql.EQ(ColumnId, id)),
+		builder: sql.Dialect(c.direct).Delete(TableName).Where(sql.EQ(ColumnId, id)),
 		db:      c.db,
 	}
 }

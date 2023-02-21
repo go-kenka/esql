@@ -3,12 +3,12 @@ package role
 
 import (
 	"context"
-	"github.com/go-kenka/esql"
+	"entgo.io/ent/dialect/sql"
 	"github.com/jmoiron/sqlx"
 )
 
 type RoleQuery struct {
-	*esql.Selector
+	*sql.Selector
 	db   *sqlx.DB
 	with map[string]struct{}
 }
@@ -113,12 +113,12 @@ func (q *RoleQuery) WithUserList() *RoleQuery {
 	return q
 }
 
-func (q *RoleQuery) UserQuery() *esql.Selector {
+func (q *RoleQuery) UserQuery() *sql.Selector {
 	var cols []string
 	cols = append(cols, edgeUserTable.C(EdgeUserRefField))
 	cols = append(cols, edgeUserTable.C(EdgeUserDisplayNikeName))
 
-	return esql.NewBuilder(q.db.DriverName()).Select(cols...).From(edgeUserTable)
+	return sql.Dialect(q.db.DriverName()).Select(cols...).From(edgeUserTable)
 }
 
 func (q *RoleQuery) queryWith(ctx context.Context, data []*RoleData) error {
@@ -128,7 +128,7 @@ func (q *RoleQuery) queryWith(ctx context.Context, data []*RoleData) error {
 			ids = append(ids, datum.Id)
 		}
 
-		query, args := q.UserQuery().Where(esql.InInts(EdgeUserRefField, ids...)).OrderBy(esql.Desc(EdgeUserRefField)).Query()
+		query, args := q.UserQuery().Where(sql.InInts(EdgeUserRefField, ids...)).OrderBy(sql.Desc(EdgeUserRefField)).Query()
 		var userData []*RoleEdgeUserData
 		err := q.db.SelectContext(ctx, &userData, query, args...)
 		if err != nil {

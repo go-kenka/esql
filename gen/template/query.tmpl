@@ -3,12 +3,12 @@ package {{.Name}}
 
 import (
 	"context"
-	"github.com/go-kenka/esql"
+	"entgo.io/ent/dialect/sql"
 	"github.com/jmoiron/sqlx"
 )
 
 type {{.Name | camelCase}}Query struct {
-	*esql.Selector
+	*sql.Selector
 	db    *sqlx.DB
 	with  map[string]struct{}
 }
@@ -151,14 +151,14 @@ func (q *{{$.Name | camelCase}}Query) With{{$e.From | camelCase}}List() *{{$.Nam
 	return q
 }
 
-func (q *{{$.Name | camelCase}}Query) UserQuery() *esql.Selector {
+func (q *{{$.Name | camelCase}}Query) UserQuery() *sql.Selector {
 	var cols []string
 	cols = append(cols, edge{{$e.From | camelCase}}Table.C(Edge{{$e.From | camelCase}}RefField))
 	{{- range $j,$d := $e.Display}}
 	cols = append(cols, edge{{$e.From | camelCase}}Table.C(Edge{{$e.From | camelCase}}Display{{$d.Name | camelCase}}))
 	{{end}}
 
-	return esql.NewBuilder(q.db.DriverName()).Select(cols...).From(edge{{$e.From | camelCase}}Table)
+	return sql.Dialect(q.db.DriverName()).Select(cols...).From(edge{{$e.From | camelCase}}Table)
 }
 
 
@@ -169,7 +169,7 @@ func (q *{{$.Name | camelCase}}Query) queryWith(ctx context.Context, data []*{{$
 			ids = append(ids, datum.Id)
 		}
 
-		query, args := q.UserQuery().Where(esql.InInts(Edge{{$e.From | camelCase}}RefField, ids...)).OrderBy(esql.Desc(Edge{{$e.From | camelCase}}RefField)).Query()
+		query, args := q.UserQuery().Where(sql.InInts(Edge{{$e.From | camelCase}}RefField, ids...)).OrderBy(sql.Desc(Edge{{$e.From | camelCase}}RefField)).Query()
 		var {{$e.From | camelCase | lower}}Data []*{{$.Name | camelCase}}Edge{{$e.From | camelCase}}Data
 		err := q.db.SelectContext(ctx, &{{$e.From | camelCase | lower}}Data, query, args...)
 		if err != nil {

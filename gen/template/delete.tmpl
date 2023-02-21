@@ -3,16 +3,16 @@ package {{.Name}}
 
 import (
 	"context"
-	"github.com/go-kenka/esql"
+	"entgo.io/ent/dialect/sql"
 	"github.com/jmoiron/sqlx"
 )
 
 type {{.Name | camelCase}}Delete struct {
-	builder *esql.DeleteBuilder
+	builder *sql.DeleteBuilder
 	db      *sqlx.DB
 }
 
-func (d *{{.Name | camelCase}}Delete) Where(p *esql.Predicate) *{{.Name | camelCase}}Delete {
+func (d *{{.Name | camelCase}}Delete) Where(p *sql.Predicate) *{{.Name | camelCase}}Delete {
 	d.builder.Where(p)
 	return d
 }
@@ -32,7 +32,7 @@ func (d *{{.Name | camelCase}}Delete) sqlSave(ctx context.Context) (int, error) 
 }
 
 type {{.Name | camelCase}}DeleteOne struct {
-	builder *esql.DeleteBuilder
+	builder *sql.DeleteBuilder
 	db      *sqlx.DB
 }
 

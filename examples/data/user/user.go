@@ -2,7 +2,7 @@
 package user
 
 import (
-	"github.com/go-kenka/esql"
+	"entgo.io/ent/dialect/sql"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -19,8 +19,8 @@ const (
 )
 
 var (
-	userTable     = esql.Table(TableName).As("t1")
-	edgeRoleTable = esql.Table(EdgeRoleTableName).As("t2")
+	userTable     = sql.Table(TableName).As("t1")
+	edgeRoleTable = sql.Table(EdgeRoleTableName).As("t2")
 )
 
 var Columns = []string{
@@ -65,7 +65,7 @@ func (c *UserClient) Query() *UserQuery {
 		cols = append(cols, userTable.C(column))
 	}
 	return &UserQuery{
-		Selector: esql.NewBuilder(c.direct).Select(cols...).From(userTable),
+		Selector: sql.Dialect(c.direct).Select(cols...).From(userTable),
 		db:       c.db,
 		with:     map[string]struct{}{},
 	}
@@ -73,7 +73,7 @@ func (c *UserClient) Query() *UserQuery {
 
 func (c *UserClient) Create() *UserCreate {
 	return &UserCreate{
-		builder: esql.NewBuilder(c.direct).Insert(TableName),
+		builder: sql.Dialect(c.direct).Insert(TableName),
 		db:      c.db,
 		data:    &UserData{},
 	}
@@ -88,7 +88,7 @@ func (c *UserClient) CreateBulk(data ...*UserCreate) *UserCreateBulk {
 
 func (c *UserClient) Update() *UserUpdate {
 	return &UserUpdate{
-		builder: esql.NewBuilder(c.direct).Update(TableName),
+		builder: sql.Dialect(c.direct).Update(TableName),
 		db:      c.db,
 		data:    &UserData{},
 	}
@@ -96,7 +96,7 @@ func (c *UserClient) Update() *UserUpdate {
 
 func (c *UserClient) UpdateOne(id int) *UserUpdateOne {
 	return &UserUpdateOne{
-		builder: esql.NewBuilder(c.direct).Update(TableName).Where(esql.EQ(ColumnId, id)),
+		builder: sql.Dialect(c.direct).Update(TableName).Where(sql.EQ(ColumnId, id)),
 		db:      c.db,
 		data:    &UserData{},
 	}
@@ -104,14 +104,14 @@ func (c *UserClient) UpdateOne(id int) *UserUpdateOne {
 
 func (c *UserClient) Delete() *UserDelete {
 	return &UserDelete{
-		builder: esql.NewBuilder(c.direct).Delete(TableName),
+		builder: sql.Dialect(c.direct).Delete(TableName),
 		db:      c.db,
 	}
 }
 
 func (c *UserClient) DeleteOne(id int) *UserDeleteOne {
 	return &UserDeleteOne{
-		builder: esql.NewBuilder(c.direct).Delete(TableName).Where(esql.EQ(ColumnId, id)),
+		builder: sql.Dialect(c.direct).Delete(TableName).Where(sql.EQ(ColumnId, id)),
 		db:      c.db,
 	}
 }

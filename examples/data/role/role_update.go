@@ -3,12 +3,12 @@ package role
 
 import (
 	"context"
-	"github.com/go-kenka/esql"
+	"entgo.io/ent/dialect/sql"
 	"github.com/jmoiron/sqlx"
 )
 
 type RoleUpdate struct {
-	builder *esql.UpdateBuilder
+	builder *sql.UpdateBuilder
 	db      *sqlx.DB
 	data    *RoleData
 }
@@ -26,7 +26,7 @@ func (u *RoleUpdate) Add(column string, v any) *RoleUpdate {
 	return u
 }
 
-func (u *RoleUpdate) Where(p *esql.Predicate) *RoleUpdate {
+func (u *RoleUpdate) Where(p *sql.Predicate) *RoleUpdate {
 	u.builder.Where(p)
 	return u
 }
@@ -53,7 +53,7 @@ func (u *RoleUpdate) sqlSave(ctx context.Context) ([]*RoleData, error) {
 }
 
 type RoleUpdateOne struct {
-	builder *esql.UpdateBuilder
+	builder *sql.UpdateBuilder
 	db      *sqlx.DB
 	data    *RoleData
 }

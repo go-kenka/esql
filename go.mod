@@ -8,7 +8,6 @@ require (
 	github.com/gobeam/stringy v0.0.6
 	github.com/jmoiron/sqlx v1.3.5
 	github.com/spf13/cobra v1.6.1
-	github.com/stretchr/testify v1.8.1
 )
 
 require (

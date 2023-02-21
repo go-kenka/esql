@@ -3,16 +3,16 @@ package user
 
 import (
 	"context"
-	"github.com/go-kenka/esql"
+	"entgo.io/ent/dialect/sql"
 	"github.com/jmoiron/sqlx"
 )
 
 type UserDelete struct {
-	builder *esql.DeleteBuilder
+	builder *sql.DeleteBuilder
 	db      *sqlx.DB
 }
 
-func (d *UserDelete) Where(p *esql.Predicate) *UserDelete {
+func (d *UserDelete) Where(p *sql.Predicate) *UserDelete {
 	d.builder.Where(p)
 	return d
 }
@@ -32,7 +32,7 @@ func (d *UserDelete) sqlSave(ctx context.Context) (int, error) {
 }
 
 type UserDeleteOne struct {
-	builder *esql.DeleteBuilder
+	builder *sql.DeleteBuilder
 	db      *sqlx.DB
 }
 

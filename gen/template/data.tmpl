@@ -2,7 +2,7 @@
 package {{.Name}}
 
 import (
-	"github.com/go-kenka/esql"
+	"entgo.io/ent/dialect/sql"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -33,12 +33,12 @@ const (
 )
 
 var (
-	{{.Name | camelCase | lower}}Table        = esql.Table(TableName).As("t1")
+	{{.Name | camelCase | lower}}Table        = sql.Table(TableName).As("t1")
 	{{- range $i,$e := .Edges}}
     {{- if eq $e.To ""}}
-    edge{{$e.From | camelCase }}Table      = esql.Table(Edge{{$e.From | camelCase }}TableName).As("t{{add $i 2}}")
+    edge{{$e.From | camelCase }}Table      = sql.Table(Edge{{$e.From | camelCase }}TableName).As("t{{add $i 2}}")
     {{- else }}
-    {{$e.To | camelCase | lower}}Edge{{$e.From | camelCase }}Table  = esql.Table({{$e.To | camelCase}}Edge{{$e.From | camelCase }}TableName)
+    {{$e.To | camelCase | lower}}Edge{{$e.From | camelCase }}Table  = sql.Table({{$e.To | camelCase}}Edge{{$e.From | camelCase }}TableName)
     {{- end -}}
     {{- end}}
 )
@@ -129,7 +129,7 @@ func (c *{{.Name | camelCase}}Client) Query() *{{.Name | camelCase}}Query {
 		cols = append(cols, {{.Name | camelCase | lower}}Table.C(column))
 	}
 	return &{{.Name | camelCase}}Query{
-		Selector: esql.NewBuilder(c.direct).Select(cols...).From({{.Name | camelCase | lower}}Table),
+		Selector: sql.Dialect(c.direct).Select(cols...).From({{.Name | camelCase | lower}}Table),
 		db:       c.db,
 		with: map[string]struct{}{},
 	}
@@ -137,7 +137,7 @@ func (c *{{.Name | camelCase}}Client) Query() *{{.Name | camelCase}}Query {
 
 func (c *{{.Name | camelCase}}Client) Create() *{{.Name | camelCase}}Create {
 	return &{{.Name | camelCase}}Create{
-		builder: esql.NewBuilder(c.direct).Insert(TableName),
+		builder: sql.Dialect(c.direct).Insert(TableName),
 		db:      c.db,
 		data:    &{{.Name | camelCase}}Data{},
 	}
@@ -152,7 +152,7 @@ func (c *{{.Name | camelCase}}Client) CreateBulk(data ...*{{.Name | camelCase}}C
 
 func (c *{{.Name | camelCase}}Client) Update() *{{.Name | camelCase}}Update {
 	return &{{.Name | camelCase}}Update{
-		builder: esql.NewBuilder(c.direct).Update(TableName),
+		builder: sql.Dialect(c.direct).Update(TableName),
 		db:      c.db,
 		data:    &{{.Name | camelCase}}Data{},
 	}
@@ -160,7 +160,7 @@ func (c *{{.Name | camelCase}}Client) Update() *{{.Name | camelCase}}Update {
 
 func (c *{{.Name | camelCase}}Client) UpdateOne(id int) *{{.Name | camelCase}}UpdateOne {
 	return &{{.Name | camelCase}}UpdateOne{
-		builder: esql.NewBuilder(c.direct).Update(TableName).Where(esql.EQ(ColumnId, id)),
+		builder: sql.Dialect(c.direct).Update(TableName).Where(sql.EQ(ColumnId, id)),
 		db:      c.db,
 		data:    &{{.Name | camelCase}}Data{},
 	}
@@ -168,14 +168,14 @@ func (c *{{.Name | camelCase}}Client) UpdateOne(id int) *{{.Name | camelCase}}Up
 
 func (c *{{.Name | camelCase}}Client) Delete() *{{.Name | camelCase}}Delete {
 	return &{{.Name | camelCase}}Delete{
-		builder: esql.NewBuilder(c.direct).Delete(TableName),
+		builder: sql.Dialect(c.direct).Delete(TableName),
 		db:      c.db,
 	}
 }
 
 func (c *{{.Name | camelCase}}Client) DeleteOne(id int) *{{.Name | camelCase}}DeleteOne {
 	return &{{.Name | camelCase}}DeleteOne{
-		builder: esql.NewBuilder(c.direct).Delete(TableName).Where(esql.EQ(ColumnId, id)),
+		builder: sql.Dialect(c.direct).Delete(TableName).Where(sql.EQ(ColumnId, id)),
 		db:      c.db,
 	}
 }
