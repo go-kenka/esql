@@ -1,4 +1,4 @@
-package examples
+package main
 
 import (
 	"context"
@@ -9,7 +9,7 @@ import (
 
 func main() {
 
-	client, err := sql.Open("mysql", "root:xxxx!@tcp(192.168.0.12:3306)/risk-sensor?parseTime=true")
+	client, err := sql.Open("mysql", "root:Jianshu2020!@tcp(192.168.0.219:3306)/data-factory?parseTime=true&loc=Local")
 	if err != nil {
 		panic(err)
 	}

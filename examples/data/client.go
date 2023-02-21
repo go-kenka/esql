@@ -2,10 +2,14 @@
 package sql
 
 import (
+	"context"
+	stdSql "database/sql"
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
 	"fmt"
 	"github.com/jmoiron/sqlx"
+	"github.com/qustavo/sqlhooks/v2"
+	"time"
 
 	"github.com/go-kenka/esql/examples/data/migrate"
 	"github.com/go-kenka/esql/examples/data/role"
@@ -37,12 +41,37 @@ func NewClient(db *sqlx.DB) *Client {
 func Open(driverName, dataSourceName string) (*Client, error) {
 	switch driverName {
 	case dialect.MySQL, dialect.Postgres, dialect.SQLite:
-		db, err := sqlx.Open(driverName, dataSourceName)
+		db, err := stdSql.Open(driverName, dataSourceName)
 		if err != nil {
 			return nil, err
 		}
-		return NewClient(db), nil
+		defer db.Close()
+
+		hookDriverName := driverName + "WithHooks"
+		stdSql.Register(hookDriverName, sqlhooks.Wrap(db.Driver(), &Hooks{}))
+
+		sdb, err := sqlx.Open(hookDriverName, dataSourceName)
+		if err != nil {
+			return nil, err
+		}
+		return NewClient(sdb), nil
 	default:
 		return nil, fmt.Errorf("unsupported driver: %q", driverName)
 	}
+}
+
+// Hooks satisfies the sqlhook.Hooks interface
+type Hooks struct{}
+
+// Before hook will print the query with it's args and return the context with the timestamp
+func (h *Hooks) Before(ctx context.Context, query string, args ...interface{}) (context.Context, error) {
+	fmt.Printf("> %s %q", query, args)
+	return context.WithValue(ctx, "begin", time.Now()), nil
+}
+
+// After hook will get the timestamp registered on the Before hook and print the elapsed time
+func (h *Hooks) After(ctx context.Context, query string, args ...interface{}) (context.Context, error) {
+	begin := ctx.Value("begin").(time.Time)
+	fmt.Printf(". took: %s\n", time.Since(begin))
+	return ctx, nil
 }
