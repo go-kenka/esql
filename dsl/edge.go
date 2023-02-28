@@ -53,8 +53,8 @@ func EType(t EdgeType) EdgeFn {
 	}
 }
 
-func Display(d *FieldExpr) EdgeFn {
+func Display(d ...*FieldExpr) EdgeFn {
 	return func(e *EdgeExpr) {
-		e.Display = append(e.Display, d)
+		e.Display = append(e.Display, d...)
 	}
 }
