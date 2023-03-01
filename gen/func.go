@@ -23,6 +23,42 @@ func IsString(t dsl.Type) bool {
 	return t == dsl.TypeString || t == dsl.TypeEnum
 }
 
+func HasTime(t *Table) bool {
+	for _, field := range t.Fields {
+		if field.TypeInfo == dsl.TypeTime {
+			return true
+		}
+	}
+
+	for _, edge := range t.Edges {
+		for _, field := range edge.Display {
+			if field.TypeInfo == dsl.TypeTime {
+				return true
+			}
+		}
+	}
+
+	return false
+}
+
+func HasJson(t *Table) bool {
+	for _, field := range t.Fields {
+		if field.TypeInfo == dsl.TypeJSON {
+			return true
+		}
+	}
+
+	for _, edge := range t.Edges {
+		for _, field := range edge.Display {
+			if field.TypeInfo == dsl.TypeJSON {
+				return true
+			}
+		}
+	}
+
+	return false
+}
+
 func Add(a, b int) int {
 	return a + b
 }

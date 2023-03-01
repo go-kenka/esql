@@ -20,6 +20,8 @@ func genData(base string, t *Table) error {
 		"goType":    GoType,
 		"lower":     Lower,
 		"add":       Add,
+		"hasTime":   HasTime,
+		"hasJson":   HasJson,
 	})
 	tmp, err := tmp.ParseFS(tmpl, "template/data.tmpl")
 	if err != nil {

@@ -4,6 +4,12 @@ package {{.Name}}
 import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/jmoiron/sqlx"
+	{{- if hasTime . }}
+	"time"
+	{{- end}}
+	{{- if hasJson . }}
+	"encoding/json"
+	{{- end}}
 )
 
 const (
@@ -78,8 +84,8 @@ func (d *{{$.Name | camelCase}}Data) Has{{$e.From | camelCase}}() bool {
 	return d.{{$.Name | camelCase}}Edge{{$e.From | camelCase}}Data != nil
 	{{- end -}}
 }
-{{- end -}}
-{{- end -}}
+{{end}}
+{{end}}
 
 {{range $i,$e := .Edges}}
 {{ if eq $e.To "" }}
@@ -87,10 +93,9 @@ type {{$.Name | camelCase}}Edge{{$e.From | camelCase}}Data struct {
     {{- range $j,$e1 := $.Edges}}
     {{- if eq $e1.To $e.From -}}
     *{{$e1.To | camelCase}}Edge{{$e1.From | camelCase}}Data
-	{{else}}
+    {{- end -}}
+    {{- end -}}
 	{{$e.Ref | camelCase }} int `db:"{{$e.Ref}}"` // {{$e.Ref}}
-    {{- end -}}
-    {{- end -}}
 	{{- range $k,$d := $e.Display}}
 	{{$d.Name | camelCase }} {{$d.TypeInfo | goType}} `db:"{{$d.Name}}"` // {{$d.Comment}}
 	{{- end}}
