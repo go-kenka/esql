@@ -4,12 +4,12 @@ package role
 import (
 	"context"
 	"entgo.io/ent/dialect/sql"
-	"github.com/jmoiron/sqlx"
+	"github.com/go-kenka/esql"
 )
 
 type RoleQuery struct {
 	*sql.Selector
-	db   *sqlx.DB
+	db   esql.Driver
 	with map[string]struct{}
 }
 

@@ -5,12 +5,13 @@ import (
 	"context"
 	"entgo.io/ent/dialect/sql"
 	"github.com/jmoiron/sqlx"
+	"github.com/go-kenka/esql"
 )
 
 type {{.Name | camelCase}}Create struct {
 	builder  *sql.InsertBuilder
 	selector *sql.Selector
-	db       *sqlx.DB
+	db       esql.Driver
 	data     *{{.Name | camelCase}}Data
 }
 
@@ -55,7 +56,7 @@ func (c *{{.Name | camelCase}}Create) get(ctx context.Context, id int) (*{{.Name
 }
 
 type {{.Name | camelCase}}CreateBulk struct {
-	db       *sqlx.DB
+	db       esql.Driver
 	selector *sql.Selector
 	data     []*{{.Name | camelCase}}Create
 }

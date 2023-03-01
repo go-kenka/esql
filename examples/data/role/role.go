@@ -3,7 +3,7 @@ package role
 
 import (
 	"entgo.io/ent/dialect/sql"
-	"github.com/jmoiron/sqlx"
+	"github.com/go-kenka/esql"
 )
 
 const (
@@ -28,7 +28,7 @@ var Columns = []string{
 
 type RoleClient struct {
 	direct string
-	db     *sqlx.DB
+	db     esql.Driver
 }
 
 type RoleData struct {
@@ -47,7 +47,7 @@ type RoleEdgeUserData struct {
 	NikeName string `db:"nike_name"` //
 }
 
-func NewRoleClient(db *sqlx.DB) *RoleClient {
+func NewRoleClient(db esql.Driver) *RoleClient {
 	return &RoleClient{
 		direct: db.DriverName(),
 		db:     db,

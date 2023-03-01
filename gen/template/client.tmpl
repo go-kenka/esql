@@ -2,10 +2,13 @@
 package sql
 
 import (
+	"context"
 	"fmt"
+	stdSql "database/sql"
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
 	"github.com/jmoiron/sqlx"
+    "github.com/go-kenka/esql"
 
 	"{{$.Pkg}}/migrate"
 	{{- range $i,$t := .Tables }}
@@ -48,4 +51,38 @@ func Open(driverName, dataSourceName string) (*Client, error) {
 	default:
 		return nil, fmt.Errorf("unsupported driver: %q", driverName)
 	}
+}
+
+
+// Tx .
+type Tx struct {
+	esql.Driver
+	tx        *sqlx.Tx
+	Builder   *sql.DialectBuilder
+	{{- range $i,$t := .Tables }}
+	{{$t.Name | camelCase}} *{{$t.Name}}.{{$t.Name | camelCase}}Client
+	{{- end }}
+}
+
+func (c *Client) BeginTx(ctx context.Context, opts *stdSql.TxOptions) (*Tx, error) {
+	tx, err := c.DB.BeginTxx(ctx, opts)
+	if err != nil {
+		return nil, err
+	}
+
+	return &Tx{
+		Driver:      tx,
+		Builder: sql.Dialect(tx.DriverName()),
+		{{- range $i,$t := .Tables }}
+		{{$t.Name | camelCase}}: {{$t.Name}}.New{{$t.Name | camelCase}}Client(tx),
+		{{- end }}
+	}, nil
+}
+
+func (t *Tx) Commit() error {
+	return t.tx.Commit()
+}
+
+func (t *Tx) Rollback() error {
+	return t.tx.Rollback()
 }

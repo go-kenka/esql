@@ -4,12 +4,12 @@ package role
 import (
 	"context"
 	"entgo.io/ent/dialect/sql"
-	"github.com/jmoiron/sqlx"
+	"github.com/go-kenka/esql"
 )
 
 type RoleDelete struct {
 	builder *sql.DeleteBuilder
-	db      *sqlx.DB
+	db      esql.Driver
 }
 
 func (d *RoleDelete) Where(p *sql.Predicate) *RoleDelete {
@@ -33,7 +33,7 @@ func (d *RoleDelete) sqlSave(ctx context.Context) (int, error) {
 
 type RoleDeleteOne struct {
 	builder *sql.DeleteBuilder
-	db      *sqlx.DB
+	db      esql.Driver
 }
 
 func (d *RoleDeleteOne) Save(ctx context.Context) error {

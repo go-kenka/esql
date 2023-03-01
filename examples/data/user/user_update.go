@@ -4,12 +4,12 @@ package user
 import (
 	"context"
 	"entgo.io/ent/dialect/sql"
-	"github.com/jmoiron/sqlx"
+	"github.com/go-kenka/esql"
 )
 
 type UserUpdate struct {
 	builder *sql.UpdateBuilder
-	db      *sqlx.DB
+	db      esql.Driver
 	data    *UserData
 }
 
@@ -54,7 +54,7 @@ func (u *UserUpdate) sqlSave(ctx context.Context) ([]*UserData, error) {
 
 type UserUpdateOne struct {
 	builder *sql.UpdateBuilder
-	db      *sqlx.DB
+	db      esql.Driver
 	data    *UserData
 }
 

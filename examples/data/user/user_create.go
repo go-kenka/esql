@@ -4,13 +4,14 @@ package user
 import (
 	"context"
 	"entgo.io/ent/dialect/sql"
+	"github.com/go-kenka/esql"
 	"github.com/jmoiron/sqlx"
 )
 
 type UserCreate struct {
 	builder  *sql.InsertBuilder
 	selector *sql.Selector
-	db       *sqlx.DB
+	db       esql.Driver
 	data     *UserData
 }
 
@@ -55,7 +56,7 @@ func (c *UserCreate) get(ctx context.Context, id int) (*UserData, error) {
 }
 
 type UserCreateBulk struct {
-	db       *sqlx.DB
+	db       esql.Driver
 	selector *sql.Selector
 	data     []*UserCreate
 }

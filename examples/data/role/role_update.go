@@ -4,12 +4,12 @@ package role
 import (
 	"context"
 	"entgo.io/ent/dialect/sql"
-	"github.com/jmoiron/sqlx"
+	"github.com/go-kenka/esql"
 )
 
 type RoleUpdate struct {
 	builder *sql.UpdateBuilder
-	db      *sqlx.DB
+	db      esql.Driver
 	data    *RoleData
 }
 
@@ -54,7 +54,7 @@ func (u *RoleUpdate) sqlSave(ctx context.Context) ([]*RoleData, error) {
 
 type RoleUpdateOne struct {
 	builder *sql.UpdateBuilder
-	db      *sqlx.DB
+	db      esql.Driver
 	data    *RoleData
 }
 

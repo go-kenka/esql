@@ -4,13 +4,14 @@ package role
 import (
 	"context"
 	"entgo.io/ent/dialect/sql"
+	"github.com/go-kenka/esql"
 	"github.com/jmoiron/sqlx"
 )
 
 type RoleCreate struct {
 	builder  *sql.InsertBuilder
 	selector *sql.Selector
-	db       *sqlx.DB
+	db       esql.Driver
 	data     *RoleData
 }
 
@@ -55,7 +56,7 @@ func (c *RoleCreate) get(ctx context.Context, id int) (*RoleData, error) {
 }
 
 type RoleCreateBulk struct {
-	db       *sqlx.DB
+	db       esql.Driver
 	selector *sql.Selector
 	data     []*RoleCreate
 }

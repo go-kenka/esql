@@ -3,7 +3,7 @@ package {{.Name}}
 
 import (
 	"entgo.io/ent/dialect/sql"
-	"github.com/jmoiron/sqlx"
+	"github.com/go-kenka/esql"
 	{{- if hasTime . }}
 	"time"
 	{{- end}}
@@ -57,7 +57,7 @@ var Columns = []string{
 
 type {{.Name | camelCase}}Client struct {
 	direct string
-	db     *sqlx.DB
+	db     esql.Driver
 }
 
 type {{.Name | camelCase}}Data struct {
@@ -121,7 +121,7 @@ type {{$e.From | camelCase}}Edge{{$e1.From | camelCase}}Data struct {
 {{- end -}}
 {{- end}}
 
-func New{{.Name | camelCase}}Client(db *sqlx.DB) *{{.Name | camelCase}}Client {
+func New{{.Name | camelCase}}Client(db esql.Driver) *{{.Name | camelCase}}Client {
 	return &{{.Name | camelCase}}Client{
 		direct: db.DriverName(),
 		db:     db,

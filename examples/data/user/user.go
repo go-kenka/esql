@@ -3,7 +3,7 @@ package user
 
 import (
 	"entgo.io/ent/dialect/sql"
-	"github.com/jmoiron/sqlx"
+	"github.com/go-kenka/esql"
 )
 
 const (
@@ -32,7 +32,7 @@ var Columns = []string{
 
 type UserClient struct {
 	direct string
-	db     *sqlx.DB
+	db     esql.Driver
 }
 
 type UserData struct {
@@ -52,7 +52,7 @@ type UserEdgeRoleData struct {
 	RoleName string `db:"role_name"` //
 }
 
-func NewUserClient(db *sqlx.DB) *UserClient {
+func NewUserClient(db esql.Driver) *UserClient {
 	return &UserClient{
 		direct: db.DriverName(),
 		db:     db,
