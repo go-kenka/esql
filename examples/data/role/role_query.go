@@ -32,7 +32,7 @@ func (q *RoleQuery) First(ctx context.Context) (*RoleData, error) {
 func (q *RoleQuery) FirstID(ctx context.Context) (int, error) {
 	query, args := q.Select(ColumnId).Limit(1).Query()
 	var id int
-	err := q.db.QueryRowContext(ctx, query, args...).Scan(&id)
+	err := q.db.QueryRowxContext(ctx, query, args...).Scan(&id)
 	if err != nil {
 		return 0, err
 	}
@@ -89,7 +89,7 @@ func (q *RoleQuery) AllX(ctx context.Context) ([]*RoleData, error) {
 func (q *RoleQuery) CountX(ctx context.Context) (int, error) {
 	query, args := q.Count(ColumnId).Query()
 	var count int
-	err := q.db.QueryRowContext(ctx, query, args...).Scan(&count)
+	err := q.db.QueryRowxContext(ctx, query, args...).Scan(&count)
 	if err != nil {
 		return 0, err
 	}
@@ -100,7 +100,7 @@ func (q *RoleQuery) CountX(ctx context.Context) (int, error) {
 func (q *RoleQuery) ExistX(ctx context.Context) (bool, error) {
 	query, args := q.Count(ColumnId).Query()
 	var count int
-	err := q.db.QueryRowContext(ctx, query, args...).Scan(&count)
+	err := q.db.QueryRowxContext(ctx, query, args...).Scan(&count)
 	if err != nil {
 		return false, err
 	}
@@ -122,6 +122,7 @@ func (q *RoleQuery) UserQuery() *sql.Selector {
 }
 
 func (q *RoleQuery) queryWith(ctx context.Context, data []*RoleData) error {
+
 	if _, ok := q.with["user"]; ok {
 		var ids []int
 		for _, datum := range data {
@@ -167,6 +168,5 @@ func (q *RoleQuery) queryWith(ctx context.Context, data []*RoleData) error {
 			d.UserList = userMap[d.Id]
 		}
 	}
-
 	return nil
 }

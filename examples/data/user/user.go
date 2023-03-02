@@ -7,20 +7,27 @@ import (
 )
 
 const (
-	TableName               = "user"
-	ColumnId                = "id"
-	ColumnUsername          = "username"
-	ColumnNikeName          = "nike_name"
-	ColumnRoleId            = "role_id" // EdgeRoleTableName 用户与角色关系
+	TableName      = "user"
+	ColumnId       = "id"
+	ColumnUsername = "username"
+	ColumnNikeName = "nike_name"
+	ColumnRoleId   = "role_id"
+	// EdgeRoleTableName 用户与角色关系
 	EdgeRoleTableName       = "role"
 	EdgeRoleLinkField       = "role_id"
 	EdgeRoleRefField        = "id"
 	EdgeRoleDisplayRoleName = "role_name"
+	// RoleEdgeAccessTableName 角色与权限关系
+	RoleEdgeAccessTableName         = "access"
+	RoleEdgeAccessLinkField         = "access_id"
+	RoleEdgeAccessRefField          = "id"
+	RoleEdgeAccessDisplayAccessName = "access_name"
 )
 
 var (
-	userTable     = sql.Table(TableName).As("t1")
-	edgeRoleTable = sql.Table(EdgeRoleTableName).As("t2")
+	userTable           = sql.Table(TableName).As("t1")
+	edgeRoleTable       = sql.Table(EdgeRoleTableName).As("t2")
+	roleEdgeAccessTable = sql.Table(RoleEdgeAccessTableName)
 )
 
 var Columns = []string{
@@ -37,6 +44,7 @@ type UserClient struct {
 
 type UserData struct {
 	*UserEdgeRoleData
+
 	Id       int    `db:"id"`        // ID
 	Username string `db:"username"`  // 用户账号
 	NikeName string `db:"nike_name"` // 用户名称
@@ -48,8 +56,17 @@ func (d *UserData) HasRole() bool {
 }
 
 type UserEdgeRoleData struct {
+	*RoleEdgeAccessData
 	Id       int    `db:"id"`        // id
 	RoleName string `db:"role_name"` //
+}
+
+func (d *UserEdgeRoleData) HasAccess() bool {
+	return d.RoleEdgeAccessData != nil
+}
+
+type RoleEdgeAccessData struct {
+	AccessName string `db:"access_name"` //
 }
 
 func NewUserClient(db esql.Driver) *UserClient {

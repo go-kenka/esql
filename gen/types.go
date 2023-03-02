@@ -115,13 +115,13 @@ var EdgeTypeNameMap = map[string]dsl.EdgeType{
 }
 
 type Edge struct {
-	Desc    string
-	Type    dsl.EdgeType
-	Link    string
-	From    string
-	To      string
-	Ref     string
-	Display []*Field
+	Desc     string
+	Type     dsl.EdgeType
+	Link     string
+	From     string
+	Ref      string
+	Display  []*Field
+	Relation []*Edge
 }
 
 type Table struct {

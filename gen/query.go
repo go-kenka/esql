@@ -19,6 +19,7 @@ func genQuery(base string, t *Table) error {
 		"camelCase": CamelCase,
 		"goType":    GoType,
 		"lower":     Lower,
+		"withCheck": WithCheck,
 	})
 	tmp, err := tmp.ParseFS(tmpl, "template/query.tmpl")
 	if err != nil {

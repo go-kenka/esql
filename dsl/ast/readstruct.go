@@ -170,12 +170,12 @@ func readEdgeFn(edge *gen.Edge, call *ast.CallExpr) {
 			readEdgeType(edge, call.Args[0])
 		case "From":
 			readEdgeFrom(edge, call.Args[0])
-		case "To":
-			readEdgeTo(edge, call.Args[0])
 		case "Ref":
 			readEdgeRef(edge, call.Args[0])
 		case "Display":
 			readEdgeDisplay(edge, call.Args)
+		case "Relation":
+			readEdgeRelation(edge, call.Args)
 		}
 	}
 
@@ -196,12 +196,6 @@ func readEdgeType(edge *gen.Edge, arg ast.Expr) {
 func readEdgeFrom(edge *gen.Edge, arg ast.Expr) {
 	if d, ok := arg.(*ast.BasicLit); ok {
 		edge.From = getStringValue(d)
-	}
-}
-
-func readEdgeTo(edge *gen.Edge, arg ast.Expr) {
-	if d, ok := arg.(*ast.BasicLit); ok {
-		edge.To = getStringValue(d)
 	}
 }
 
@@ -230,6 +224,26 @@ func readEdgeDisplay(edgs *gen.Edge, args []ast.Expr) {
 		}
 
 		edgs.Display = append(edgs.Display, fs)
+	}
+}
+func readEdgeRelation(e *gen.Edge, args []ast.Expr) {
+	for _, arg := range args {
+		edge := &gen.Edge{}
+		if call, ok := arg.(*ast.CallExpr); ok {
+			//等于定义
+			if fun, ok := call.Fun.(*ast.Ident); ok && fun.Name == "Edge" {
+				for _, fg := range call.Args {
+					switch a := fg.(type) {
+					case *ast.BasicLit:
+						edge.Desc = getStringValue(a)
+					case *ast.CallExpr:
+						readEdgeFn(edge, a)
+					}
+				}
+			}
+		}
+
+		e.Relation = append(e.Relation, edge)
 	}
 }
 

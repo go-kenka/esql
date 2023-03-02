@@ -7,9 +7,10 @@ import (
 )
 
 const (
-	TableName               = "role"
-	ColumnId                = "id"
-	ColumnRoleName          = "role_name" // EdgeUserTableName 角色与用户关系（1对n）
+	TableName      = "role"
+	ColumnId       = "id"
+	ColumnRoleName = "role_name"
+	// EdgeUserTableName 角色与用户关系（1对n）
 	EdgeUserTableName       = "user"
 	EdgeUserLinkField       = "id"
 	EdgeUserRefField        = "role_id"

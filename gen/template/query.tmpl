@@ -32,7 +32,7 @@ func (q *{{.Name | camelCase}}Query) First(ctx context.Context) (*{{.Name | came
 func (q *{{.Name | camelCase}}Query) FirstID(ctx context.Context) (int, error) {
 	query, args := q.Select(ColumnId).Limit(1).Query()
 	var id int
-	err := q.db.QueryRowContext(ctx, query, args...).Scan(&id)
+	err := q.db.QueryRowxContext(ctx, query, args...).Scan(&id)
 	if err != nil {
 		return 0, err
 	}
@@ -89,7 +89,7 @@ func (q *{{.Name | camelCase}}Query) AllX(ctx context.Context) ([]*{{.Name | cam
 func (q *{{.Name | camelCase}}Query) CountX(ctx context.Context) (int, error) {
 	query, args := q.Count(ColumnId).Query()
 	var count int
-	err := q.db.QueryRowContext(ctx, query, args...).Scan(&count)
+	err := q.db.QueryRowxContext(ctx, query, args...).Scan(&count)
 	if err != nil {
 		return 0, err
 	}
@@ -100,7 +100,7 @@ func (q *{{.Name | camelCase}}Query) CountX(ctx context.Context) (int, error) {
 func (q *{{.Name | camelCase}}Query) ExistX(ctx context.Context) (bool, error) {
 	query, args := q.Count(ColumnId).Query()
 	var count int
-	err := q.db.QueryRowContext(ctx, query, args...).Scan(&count)
+	err := q.db.QueryRowxContext(ctx, query, args...).Scan(&count)
 	if err != nil {
 		return false, err
 	}
@@ -109,7 +109,6 @@ func (q *{{.Name | camelCase}}Query) ExistX(ctx context.Context) (bool, error) {
 }
 
 {{range $i,$e := .Edges}}
-{{- if eq $e.To "" -}}
 {{- if or (eq $e.Type 0) (eq $e.Type 2)}}
 func (q *{{$.Name | camelCase}}Query) With{{$e.From | camelCase}}() *{{$.Name | camelCase}}Query {
 	// 添加Display字段
@@ -124,26 +123,19 @@ func (q *{{$.Name | camelCase}}Query) With{{$e.From | camelCase}}() *{{$.Name | 
 	)
 
 
-	{{- if eq $e.To "" -}}
-		{{- range $j,$e1 := $.Edges}}
-			{{- if eq $e1.To $e.From -}}
-				{{- range $j,$d := $e1.Display}}
-					// 添加Display字段
-					q.AppendSelect({{$e1.To | camelCase | lower}}Edge{{$e1.From | camelCase }}Table.C({{$e1.To | camelCase}}Edge{{$e1.From | camelCase }}Display{{$d.Name | camelCase }}))
-				{{- end }}
-				// 添加关系（左连接）
-				q.LeftJoin({{$e1.To | camelCase | lower}}Edge{{$e1.From | camelCase }}Table).
-				On(
-				edge{{$e.From | camelCase }}Table.C({{$e1.To | camelCase}}Edge{{$e1.From | camelCase }}LinkField),
-				{{$e1.To | camelCase | lower}}Edge{{$e1.From | camelCase }}Table.C({{$e1.To | camelCase}}Edge{{$e1.From | camelCase }}RefField),
-				)
-			{{- end -}}
-		{{- end -}}
-	{{ end }}
+	{{- range $j,$e1 := $e.Relation}}
+		{{- range $k,$d := $e1.Display}}
+			// 添加Display字段
+			q.AppendSelect({{$e.From | camelCase | lower}}Edge{{$e1.From | camelCase }}Table.C({{$e.From | camelCase}}Edge{{$e1.From | camelCase }}Display{{$d.Name | camelCase }}))
+		{{- end }}
+		// 添加关系（左连接）
+		q.LeftJoin({{$e.From | camelCase | lower}}Edge{{$e1.From | camelCase }}Table).
+		On(
+		edge{{$e.From | camelCase }}Table.C({{$e.From | camelCase}}Edge{{$e1.From | camelCase }}LinkField),
+		{{$e.From | camelCase | lower}}Edge{{$e1.From | camelCase }}Table.C({{$e.From | camelCase}}Edge{{$e1.From | camelCase }}RefField),
+		)
+	{{- end}}
 	return q
-}
-func (q *{{$.Name | camelCase}}Query) queryWith(ctx context.Context, data []*{{$.Name | camelCase}}Data) error {
-	return nil
 }
 {{else}}
 func (q *{{$.Name | camelCase}}Query) With{{$e.From | camelCase}}List() *{{$.Name | camelCase}}Query {
@@ -160,10 +152,18 @@ func (q *{{$.Name | camelCase}}Query) UserQuery() *sql.Selector {
 
 	return sql.Dialect(q.db.DriverName()).Select(cols...).From(edge{{$e.From | camelCase}}Table)
 }
+{{- end -}}
+{{- end }}
 
-
+{{if withCheck .}}
 func (q *{{$.Name | camelCase}}Query) queryWith(ctx context.Context, data []*{{$.Name | camelCase}}Data) error {
-	if _, ok := q.with["{{$e.From}}"]; ok {
+	return nil
+}
+{{else}}
+func (q *{{$.Name | camelCase}}Query) queryWith(ctx context.Context, data []*{{$.Name | camelCase}}Data) error {
+	{{range $i,$e := .Edges}}
+	{{- if or (eq $e.Type 1) (eq $e.Type 3)}}
+		if _, ok := q.with["{{$e.From}}"]; ok {
 		var ids []int
 		for _, datum := range data {
 			ids = append(ids, datum.Id)
@@ -208,9 +208,8 @@ func (q *{{$.Name | camelCase}}Query) queryWith(ctx context.Context, data []*{{$
 			d.{{$e.From | camelCase}}List = {{$e.From | camelCase | lower}}Map[d.Id]
 		}
 	}
-
+	{{- end -}}
+	{{- end}}
 	return nil
 }
-{{ end }}
-{{ end }}
-{{ end }}
+{{end}}

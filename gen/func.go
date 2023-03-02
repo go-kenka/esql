@@ -58,6 +58,15 @@ func HasJson(t *Table) bool {
 
 	return false
 }
+func WithCheck(t *Table) bool {
+	for _, edge := range t.Edges {
+		if edge.Type == TypeM2O || edge.Type == TypeO2O {
+			return true
+		}
+	}
+
+	return false
+}
 
 func Add(a, b int) int {
 	return a + b

@@ -66,7 +66,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *stdSql.TxOptions) (*Tx, erro
 	}
 
 	return &Tx{
-		Driver:      tx,
+		Driver:  tx,
 		Builder: sql.Dialect(tx.DriverName()),
 		Role:    role.NewRoleClient(tx),
 		User:    user.NewUserClient(tx),
