@@ -8,9 +8,265 @@ import (
 )
 
 type UserQuery struct {
-	*sql.Selector
-	db   esql.Driver
-	with map[string]struct{}
+	selector *sql.Selector
+	db       esql.Driver
+	with     map[string]struct{}
+}
+
+// Select changes the columns selection of the SELECT statement.
+// Empty selection means all columns *.
+func (q *UserQuery) Select(columns ...string) *UserQuery {
+	q.selector.Select(columns...)
+	return q
+}
+
+// AppendSelect appends additional columns to the SELECT statement.
+func (q *UserQuery) AppendSelect(columns ...string) *UserQuery {
+	q.selector.AppendSelect(columns...)
+	return q
+}
+
+// SelectExpr changes the columns selection of the SELECT statement
+// with custom list of expressions.
+func (q *UserQuery) SelectExpr(exprs ...sql.Querier) *UserQuery {
+	q.selector.SelectExpr(exprs...)
+	return q
+}
+
+// AppendSelectExpr appends additional expressions to the SELECT statement.
+func (q *UserQuery) AppendSelectExpr(exprs ...sql.Querier) *UserQuery {
+	q.selector.AppendSelectExpr(exprs...)
+	return q
+}
+
+// AppendSelectExprAs appends additional expressions to the SELECT statement with the given name.
+func (q *UserQuery) AppendSelectExprAs(expr sql.Querier, as string) *UserQuery {
+	q.selector.AppendSelectExprAs(expr, as)
+	return q
+}
+
+// From sets the source of `FROM` clause.
+func (q *UserQuery) From(t sql.TableView) *UserQuery {
+	q.selector.From(t)
+	return q
+}
+
+// AppendFrom appends a new TableView to the `FROM` clause.
+func (q *UserQuery) AppendFrom(t sql.TableView) *UserQuery {
+	q.selector.AppendFrom(t)
+	return q
+}
+
+// FromExpr sets the expression of `FROM` clause.
+func (q *UserQuery) FromExpr(x sql.Querier) *UserQuery {
+	q.selector.FromExpr(x)
+	return q
+}
+
+// AppendFromExpr appends an expression (Queries) to the `FROM` clause.
+func (q *UserQuery) AppendFromExpr(x sql.Querier) *UserQuery {
+	q.selector.AppendFromExpr(x)
+	return q
+}
+
+// Distinct adds the DISTINCT keyword to the `SELECT` statement.
+func (q *UserQuery) Distinct() *UserQuery {
+	q.selector.Distinct()
+	return q
+}
+
+// SetDistinct sets explicitly if the returned rows are distinct or indistinct.
+func (q *UserQuery) SetDistinct(v bool) *UserQuery {
+	q.selector.SetDistinct(v)
+	return q
+}
+
+// Limit adds the `LIMIT` clause to the `SELECT` statement.
+func (q *UserQuery) Limit(limit int) *UserQuery {
+	q.selector.Limit(limit)
+	return q
+}
+
+// Offset adds the `OFFSET` clause to the `SELECT` statement.
+func (q *UserQuery) Offset(offset int) *UserQuery {
+	q.selector.Offset(offset)
+	return q
+}
+
+// Where sets or appends the given predicate to the statement.
+func (q *UserQuery) Where(p *sql.Predicate) *UserQuery {
+	q.selector.Where(p)
+	return q
+}
+
+// SetP sets explicitly the predicate function for the selector and clear its previous state.
+func (q *UserQuery) SetP(p *sql.Predicate) *UserQuery {
+	q.selector.SetP(p)
+	return q
+}
+
+// FromSelect copies the predicate from a selector.
+func (q *UserQuery) FromSelect(s2 *sql.Selector) *UserQuery {
+	q.selector.FromSelect(s2)
+	return q
+}
+
+// Not sets the next coming predicate with not.
+func (q *UserQuery) Not() *UserQuery {
+	q.selector.Not()
+	return q
+}
+
+// Or sets the next coming predicate with OR operator (disjunction).
+func (q *UserQuery) Or() *UserQuery {
+	q.selector.Or()
+	return q
+}
+
+// Join appends a `JOIN` clause to the statement.
+func (q *UserQuery) Join(t sql.TableView) *UserQuery {
+	q.selector.Join(t)
+	return q
+}
+
+// LeftJoin appends a `LEFT JOIN` clause to the statement.
+func (q *UserQuery) LeftJoin(t sql.TableView) *UserQuery {
+	q.selector.LeftJoin(t)
+	return q
+}
+
+// RightJoin appends a `RIGHT JOIN` clause to the statement.
+func (q *UserQuery) RightJoin(t sql.TableView) *UserQuery {
+	q.selector.RightJoin(t)
+	return q
+}
+
+// FullJoin appends a `FULL JOIN` clause to the statement.
+func (q *UserQuery) FullJoin(t sql.TableView) *UserQuery {
+	q.selector.FullJoin(t)
+	return q
+}
+
+// Union appends the UNION (DISTINCT) clause to the query.
+func (q *UserQuery) Union(t sql.TableView) *UserQuery {
+	q.selector.Union(t)
+	return q
+}
+
+// UnionAll appends the UNION ALL clause to the query.
+func (q *UserQuery) UnionAll(t sql.TableView) *UserQuery {
+	q.selector.UnionAll(t)
+	return q
+}
+
+// Except appends the EXCEPT clause to the query.
+func (q *UserQuery) Except(t sql.TableView) *UserQuery {
+	q.selector.Except(t)
+	return q
+}
+
+// ExceptAll appends the EXCEPT ALL clause to the query.
+func (q *UserQuery) ExceptAll(t sql.TableView) *UserQuery {
+	q.selector.ExceptAll(t)
+	return q
+}
+
+// Intersect appends the INTERSECT clause to the query.
+func (q *UserQuery) Intersect(t sql.TableView) *UserQuery {
+	q.selector.Intersect(t)
+	return q
+}
+
+// IntersectAll appends the INTERSECT ALL clause to the query.
+func (q *UserQuery) IntersectAll(t sql.TableView) *UserQuery {
+	q.selector.IntersectAll(t)
+	return q
+}
+
+// Prefix prefixes the query with list of queries.
+func (q *UserQuery) Prefix(queries ...sql.Querier) *UserQuery {
+	q.selector.Prefix(queries...)
+	return q
+}
+
+// OnP sets or appends the given predicate for the `ON` clause of the statement.
+func (q *UserQuery) OnP(p *sql.Predicate) *UserQuery {
+	q.selector.OnP(p)
+	return q
+}
+
+// On sets the `ON` clause for the `JOIN` operation.
+func (q *UserQuery) On(c1, c2 string) *UserQuery {
+	q.selector.On(c1, c2)
+	return q
+}
+
+// As give this selection an alias.
+func (q *UserQuery) As(alias string) *UserQuery {
+	q.selector.As(alias)
+	return q
+}
+
+// Count sets the Select statement to be a `SELECT COUNT(*)`.
+func (q *UserQuery) Count(columns ...string) *UserQuery {
+	q.selector.Count(columns...)
+	return q
+}
+
+// For sets the lock configuration for suffixing the `SELECT`
+// statement with the `FOR [SHARE | UPDATE] ...` clause.
+func (q *UserQuery) For(l sql.LockStrength, opts ...sql.LockOption) *UserQuery {
+	q.selector.For(l, opts...)
+	return q
+}
+
+// ForShare sets the lock configuration for suffixing the
+// `SELECT` statement with the `FOR SHARE` clause.
+func (q *UserQuery) ForShare(opts ...sql.LockOption) *UserQuery {
+	q.selector.ForShare(opts...)
+	return q
+}
+
+// ForUpdate sets the lock configuration for suffixing the
+// `SELECT` statement with the `FOR UPDATE` clause.
+func (q *UserQuery) ForUpdate(opts ...sql.LockOption) *UserQuery {
+	q.selector.ForUpdate(opts...)
+	return q
+}
+
+// OrderBy appends the `ORDER BY` clause to the `SELECT` statement.
+func (q *UserQuery) OrderBy(columns ...string) *UserQuery {
+	q.selector.OrderBy(columns...)
+	return q
+}
+
+// OrderExpr appends the `ORDER BY` clause to the `SELECT`
+// statement with custom list of expressions.
+func (q *UserQuery) OrderExpr(exprs ...sql.Querier) *UserQuery {
+	q.selector.OrderExpr(exprs...)
+	return q
+}
+
+// ClearOrder clears the ORDER BY clause to be empty.
+func (q *UserQuery) ClearOrder() *UserQuery {
+	q.selector.ClearOrder()
+	return q
+}
+
+// GroupBy appends the `GROUP BY` clause to the `SELECT` statement.
+func (q *UserQuery) GroupBy(columns ...string) *UserQuery {
+	q.selector.GroupBy(columns...)
+	return q
+}
+
+// Having appends a predicate for the `HAVING` clause.
+func (q *UserQuery) Having(p *sql.Predicate) *UserQuery {
+	q.selector.Having(p)
+	return q
+}
+
+func (q *UserQuery) Query() (string, []any) {
+	return q.selector.Query()
 }
 
 func (q *UserQuery) First(ctx context.Context) (*UserData, error) {

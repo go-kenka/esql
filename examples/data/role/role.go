@@ -10,7 +10,7 @@ const (
 	TableName      = "role"
 	ColumnId       = "id"
 	ColumnRoleName = "role_name"
-	// EdgeUserTableName 角色与用户关系（1对n）
+	// EdgeUserTableName user
 	EdgeUserTableName       = "user"
 	EdgeUserLinkField       = "id"
 	EdgeUserRefField        = "role_id"
@@ -61,7 +61,7 @@ func (c *RoleClient) Query() *RoleQuery {
 		cols = append(cols, roleTable.C(column))
 	}
 	return &RoleQuery{
-		Selector: sql.Dialect(c.direct).Select(cols...).From(roleTable),
+		selector: sql.Dialect(c.direct).Select(cols...).From(roleTable),
 		db:       c.db,
 		with:     map[string]struct{}{},
 	}

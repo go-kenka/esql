@@ -8,9 +8,269 @@ import (
 )
 
 type {{.Name | camelCase}}Query struct {
-	*sql.Selector
-	db    esql.Driver
-	with  map[string]struct{}
+	selector *sql.Selector
+	db       esql.Driver
+	with     map[string]struct{}
+}
+
+// Select changes the columns selection of the SELECT statement.
+// Empty selection means all columns *.
+func (q *{{.Name | camelCase}}Query) Select(columns ...string) *{{.Name | camelCase}}Query {
+	q.selector.Select(columns...)
+	return q
+}
+
+// AppendSelect appends additional columns to the SELECT statement.
+func (q *{{.Name | camelCase}}Query) AppendSelect(columns ...string) *{{.Name | camelCase}}Query {
+	q.selector.AppendSelect(columns...)
+	return q
+}
+
+// SelectExpr changes the columns selection of the SELECT statement
+// with custom list of expressions.
+func (q *{{.Name | camelCase}}Query) SelectExpr(exprs ...sql.Querier) *{{.Name | camelCase}}Query {
+	q.selector.SelectExpr(exprs...)
+	return q
+}
+
+// AppendSelectExpr appends additional expressions to the SELECT statement.
+func (q *{{.Name | camelCase}}Query) AppendSelectExpr(exprs ...sql.Querier) *{{.Name | camelCase}}Query {
+	q.selector.AppendSelectExpr(exprs...)
+	return q
+}
+
+// AppendSelectExprAs appends additional expressions to the SELECT statement with the given name.
+func (q *{{.Name | camelCase}}Query) AppendSelectExprAs(expr sql.Querier, as string) *{{.Name | camelCase}}Query {
+	q.selector.AppendSelectExprAs(expr, as)
+	return q
+}
+
+// From sets the source of `FROM` clause.
+func (q *{{.Name | camelCase}}Query) From(t sql.TableView) *{{.Name | camelCase}}Query {
+	q.selector.From(t)
+	return q
+}
+
+// AppendFrom appends a new TableView to the `FROM` clause.
+func (q *{{.Name | camelCase}}Query) AppendFrom(t sql.TableView) *{{.Name | camelCase}}Query {
+	q.selector.AppendFrom(t)
+	return q
+}
+
+// FromExpr sets the expression of `FROM` clause.
+func (q *{{.Name | camelCase}}Query) FromExpr(x sql.Querier) *{{.Name | camelCase}}Query {
+	q.selector.FromExpr(x)
+	return q
+}
+
+// AppendFromExpr appends an expression (Queries) to the `FROM` clause.
+func (q *{{.Name | camelCase}}Query) AppendFromExpr(x sql.Querier) *{{.Name | camelCase}}Query {
+	q.selector.AppendFromExpr(x)
+	return q
+}
+
+// Distinct adds the DISTINCT keyword to the `SELECT` statement.
+func (q *{{.Name | camelCase}}Query) Distinct() *{{.Name | camelCase}}Query {
+	q.selector.Distinct()
+	return q
+}
+
+// SetDistinct sets explicitly if the returned rows are distinct or indistinct.
+func (q *{{.Name | camelCase}}Query) SetDistinct(v bool) *{{.Name | camelCase}}Query {
+	q.selector.SetDistinct(v)
+	return q
+}
+
+// Limit adds the `LIMIT` clause to the `SELECT` statement.
+func (q *{{.Name | camelCase}}Query) Limit(limit int) *{{.Name | camelCase}}Query {
+	q.selector.Limit(limit)
+	return q
+}
+
+// Offset adds the `OFFSET` clause to the `SELECT` statement.
+func (q *{{.Name | camelCase}}Query) Offset(offset int) *{{.Name | camelCase}}Query {
+	q.selector.Offset(offset)
+	return q
+}
+
+// Where sets or appends the given predicate to the statement.
+func (q *{{.Name | camelCase}}Query) Where(p *sql.Predicate) *{{.Name | camelCase}}Query {
+	q.selector.Where(p)
+	return q
+}
+
+// SetP sets explicitly the predicate function for the selector and clear its previous state.
+func (q *{{.Name | camelCase}}Query) SetP(p *sql.Predicate) *{{.Name | camelCase}}Query {
+	q.selector.SetP(p)
+	return q
+}
+
+// FromSelect copies the predicate from a selector.
+func (q *{{.Name | camelCase}}Query) FromSelect(s2 *sql.Selector) *{{.Name | camelCase}}Query {
+	q.selector.FromSelect(s2)
+	return q
+}
+
+// Not sets the next coming predicate with not.
+func (q *{{.Name | camelCase}}Query) Not() *{{.Name | camelCase}}Query {
+	q.selector.Not()
+	return q
+}
+
+// Or sets the next coming predicate with OR operator (disjunction).
+func (q *{{.Name | camelCase}}Query) Or() *{{.Name | camelCase}}Query {
+	q.selector.Or()
+	return q
+}
+
+// Join appends a `JOIN` clause to the statement.
+func (q *{{.Name | camelCase}}Query) Join(t sql.TableView) *{{.Name | camelCase}}Query {
+	q.selector.Join(t)
+	return q
+}
+
+// LeftJoin appends a `LEFT JOIN` clause to the statement.
+func (q *{{.Name | camelCase}}Query) LeftJoin(t sql.TableView) *{{.Name | camelCase}}Query {
+	q.selector.LeftJoin(t)
+	return q
+}
+
+// RightJoin appends a `RIGHT JOIN` clause to the statement.
+func (q *{{.Name | camelCase}}Query) RightJoin(t sql.TableView) *{{.Name | camelCase}}Query {
+	q.selector.RightJoin(t)
+	return q
+}
+
+// FullJoin appends a `FULL JOIN` clause to the statement.
+func (q *{{.Name | camelCase}}Query) FullJoin(t sql.TableView) *{{.Name | camelCase}}Query {
+	q.selector.FullJoin(t)
+	return q
+}
+
+// Union appends the UNION (DISTINCT) clause to the query.
+func (q *{{.Name | camelCase}}Query) Union(t sql.TableView) *{{.Name | camelCase}}Query {
+	q.selector.Union(t)
+	return q
+}
+
+// UnionAll appends the UNION ALL clause to the query.
+func (q *{{.Name | camelCase}}Query) UnionAll(t sql.TableView) *{{.Name | camelCase}}Query {
+	q.selector.UnionAll(t)
+	return q
+}
+
+// Except appends the EXCEPT clause to the query.
+func (q *{{.Name | camelCase}}Query) Except(t sql.TableView) *{{.Name | camelCase}}Query {
+	q.selector.Except(t)
+	return q
+}
+
+// ExceptAll appends the EXCEPT ALL clause to the query.
+func (q *{{.Name | camelCase}}Query) ExceptAll(t sql.TableView) *{{.Name | camelCase}}Query {
+	q.selector.ExceptAll(t)
+	return q
+}
+
+// Intersect appends the INTERSECT clause to the query.
+func (q *{{.Name | camelCase}}Query) Intersect(t sql.TableView) *{{.Name | camelCase}}Query {
+	q.selector.Intersect(t)
+	return q
+}
+
+// IntersectAll appends the INTERSECT ALL clause to the query.
+func (q *{{.Name | camelCase}}Query) IntersectAll(t sql.TableView) *{{.Name | camelCase}}Query {
+	q.selector.IntersectAll(t)
+	return q
+}
+
+// Prefix prefixes the query with list of queries.
+func (q *{{.Name | camelCase}}Query) Prefix(queries ...sql.Querier) *{{.Name | camelCase}}Query {
+	q.selector.Prefix(queries...)
+	return q
+}
+
+// OnP sets or appends the given predicate for the `ON` clause of the statement.
+func (q *{{.Name | camelCase}}Query) OnP(p *sql.Predicate) *{{.Name | camelCase}}Query {
+	q.selector.OnP(p)
+	return q
+}
+
+// On sets the `ON` clause for the `JOIN` operation.
+func (q *{{.Name | camelCase}}Query) On(c1, c2 string) *{{.Name | camelCase}}Query {
+	q.selector.On(c1, c2)
+	return q
+}
+
+// As give this selection an alias.
+func (q *{{.Name | camelCase}}Query) As(alias string) *{{.Name | camelCase}}Query {
+	q.selector.As(alias)
+	return q
+}
+
+// Count sets the Select statement to be a `SELECT COUNT(*)`.
+func (q *{{.Name | camelCase}}Query) Count(columns ...string) *{{.Name | camelCase}}Query {
+	q.selector.Count(columns...)
+	return q
+}
+
+// For sets the lock configuration for suffixing the `SELECT`
+// statement with the `FOR [SHARE | UPDATE] ...` clause.
+func (q *{{.Name | camelCase}}Query) For(l sql.LockStrength, opts ...sql.LockOption) *{{.Name | camelCase}}Query {
+	q.selector.For(l, opts...)
+	return q
+}
+
+// ForShare sets the lock configuration for suffixing the
+// `SELECT` statement with the `FOR SHARE` clause.
+func (q *{{.Name | camelCase}}Query) ForShare(opts ...sql.LockOption) *{{.Name | camelCase}}Query {
+	q.selector.ForShare(opts...)
+	return q
+}
+
+// ForUpdate sets the lock configuration for suffixing the
+// `SELECT` statement with the `FOR UPDATE` clause.
+func (q *{{.Name | camelCase}}Query) ForUpdate(opts ...sql.LockOption) *{{.Name | camelCase}}Query {
+	q.selector.ForUpdate(opts...)
+	return q
+}
+
+// OrderBy appends the `ORDER BY` clause to the `SELECT` statement.
+func (q *{{.Name | camelCase}}Query) OrderBy(columns ...string) *{{.Name | camelCase}}Query {
+	q.selector.OrderBy(columns...)
+	return q
+}
+
+// OrderExpr appends the `ORDER BY` clause to the `SELECT`
+// statement with custom list of expressions.
+func (q *{{.Name | camelCase}}Query) OrderExpr(exprs ...sql.Querier) *{{.Name | camelCase}}Query {
+	q.selector.OrderExpr(exprs...)
+	return q
+}
+
+// ClearOrder clears the ORDER BY clause to be empty.
+func (q *{{.Name | camelCase}}Query) ClearOrder() *{{.Name | camelCase}}Query {
+	q.selector.ClearOrder()
+	return q
+}
+
+// GroupBy appends the `GROUP BY` clause to the `SELECT` statement.
+func (q *{{.Name | camelCase}}Query) GroupBy(columns ...string) *{{.Name | camelCase}}Query {
+	q.selector.GroupBy(columns...)
+	return q
+}
+
+// Having appends a predicate for the `HAVING` clause.
+func (q *{{.Name | camelCase}}Query) Having(p *sql.Predicate) *{{.Name | camelCase}}Query {
+	q.selector.Having(p)
+	return q
+}
+
+func (q *{{.Name | camelCase}}Query) Query() (string, []any) {
+	return q.selector.Query()
+}
+
+func (q *{{.Name | camelCase}}Query) C(column string) string {
+	return q.selector.C(column)
 }
 
 func (q *{{.Name | camelCase}}Query) First(ctx context.Context) (*{{.Name | camelCase}}Data, error) {
@@ -110,47 +370,47 @@ func (q *{{.Name | camelCase}}Query) ExistX(ctx context.Context) (bool, error) {
 
 {{range $i,$e := .Edges}}
 {{- if or (eq $e.Type 0) (eq $e.Type 2)}}
-func (q *{{$.Name | camelCase}}Query) With{{$e.From | camelCase}}() *{{$.Name | camelCase}}Query {
+func (q *{{$.Name | camelCase}}Query) With{{$e.Name | camelCase}}() *{{$.Name | camelCase}}Query {
 	// 添加Display字段
 	{{- range $j,$d := $e.Display}}
-		q.AppendSelect(edge{{$e.From | camelCase }}Table.C(Edge{{$e.From | camelCase }}Display{{$d.Name | camelCase }}))
+		q.AppendSelect(edge{{$e.Name | camelCase }}Table.C(Edge{{$e.Name | camelCase }}Display{{$d.Name | camelCase }}))
 	{{- end }}
 	// 添加关系（左连接）
-	q.LeftJoin(edge{{$e.From | camelCase }}Table).
+	q.LeftJoin(edge{{$e.Name | camelCase }}Table).
 	On(
-	q.C( Edge{{$e.From | camelCase }}LinkField),
-	edge{{$e.From | camelCase }}Table.C(Edge{{$e.From | camelCase }}RefField),
+	q.C( Edge{{$e.Name | camelCase }}LinkField),
+	edge{{$e.Name | camelCase }}Table.C(Edge{{$e.Name | camelCase }}RefField),
 	)
 
 
 	{{- range $j,$e1 := $e.Relation}}
 		{{- range $k,$d := $e1.Display}}
 			// 添加Display字段
-			q.AppendSelect({{$e.From | camelCase | lower}}Edge{{$e1.From | camelCase }}Table.C({{$e.From | camelCase}}Edge{{$e1.From | camelCase }}Display{{$d.Name | camelCase }}))
+			q.AppendSelect({{$e.From | camelCase | lower}}Edge{{$e1.Name | camelCase }}Table.C({{$e.From | camelCase}}Edge{{$e1.Name | camelCase }}Display{{$d.Name | camelCase }}))
 		{{- end }}
 		// 添加关系（左连接）
-		q.LeftJoin({{$e.From | camelCase | lower}}Edge{{$e1.From | camelCase }}Table).
+		q.LeftJoin({{$e.From | camelCase | lower}}Edge{{$e1.Name | camelCase }}Table).
 		On(
-		edge{{$e.From | camelCase }}Table.C({{$e.From | camelCase}}Edge{{$e1.From | camelCase }}LinkField),
-		{{$e.From | camelCase | lower}}Edge{{$e1.From | camelCase }}Table.C({{$e.From | camelCase}}Edge{{$e1.From | camelCase }}RefField),
+		edge{{$e.Name | camelCase }}Table.C({{$e.From | camelCase}}Edge{{$e1.Name | camelCase }}LinkField),
+		{{$e.From | camelCase | lower}}Edge{{$e1.Name | camelCase }}Table.C({{$e.From | camelCase}}Edge{{$e1.Name | camelCase }}RefField),
 		)
 	{{- end}}
 	return q
 }
 {{else}}
-func (q *{{$.Name | camelCase}}Query) With{{$e.From | camelCase}}List() *{{$.Name | camelCase}}Query {
-	q.with["{{$e.From}}"] = struct{}{}
+func (q *{{$.Name | camelCase}}Query) With{{$e.Name | camelCase}}List() *{{$.Name | camelCase}}Query {
+	q.with["{{$e.Name}}"] = struct{}{}
 	return q
 }
 
-func (q *{{$.Name | camelCase}}Query) UserQuery() *sql.Selector {
+func (q *{{$.Name | camelCase}}Query) {{$e.Name | camelCase}}Query() *sql.Selector {
 	var cols []string
-	cols = append(cols, edge{{$e.From | camelCase}}Table.C(Edge{{$e.From | camelCase}}RefField))
+	cols = append(cols, edge{{$e.Name | camelCase}}Table.C(Edge{{$e.Name | camelCase}}RefField))
 	{{- range $j,$d := $e.Display}}
-	cols = append(cols, edge{{$e.From | camelCase}}Table.C(Edge{{$e.From | camelCase}}Display{{$d.Name | camelCase}}))
+	cols = append(cols, edge{{$e.Name | camelCase}}Table.C(Edge{{$e.Name | camelCase}}Display{{$d.Name | camelCase}}))
 	{{end}}
 
-	return sql.Dialect(q.db.DriverName()).Select(cols...).From(edge{{$e.From | camelCase}}Table)
+	return sql.Dialect(q.db.DriverName()).Select(cols...).From(edge{{$e.Name | camelCase}}Table)
 }
 {{- end -}}
 {{- end }}
@@ -163,24 +423,24 @@ func (q *{{$.Name | camelCase}}Query) queryWith(ctx context.Context, data []*{{$
 func (q *{{$.Name | camelCase}}Query) queryWith(ctx context.Context, data []*{{$.Name | camelCase}}Data) error {
 	{{range $i,$e := .Edges}}
 	{{- if or (eq $e.Type 1) (eq $e.Type 3)}}
-		if _, ok := q.with["{{$e.From}}"]; ok {
+		if _, ok := q.with["{{$e.Name}}"]; ok {
 		var ids []int
 		for _, datum := range data {
 			ids = append(ids, datum.Id)
 		}
 
-		query, args := q.UserQuery().Where(sql.InInts(Edge{{$e.From | camelCase}}RefField, ids...)).OrderBy(sql.Desc(Edge{{$e.From | camelCase}}RefField)).Query()
-		var {{$e.From | camelCase | lower}}Data []*{{$.Name | camelCase}}Edge{{$e.From | camelCase}}Data
-		err := q.db.SelectContext(ctx, &{{$e.From | camelCase | lower}}Data, query, args...)
+		query, args := q.{{$e.Name | camelCase}}Query().Where(sql.InInts(Edge{{$e.Name | camelCase}}RefField, ids...)).OrderBy(sql.Desc(Edge{{$e.Name | camelCase}}RefField)).Query()
+		var {{$e.Name | camelCase | lower}}Data []*{{$.Name | camelCase}}Edge{{$e.Name | camelCase}}Data
+		err := q.db.SelectContext(ctx, &{{$e.Name | camelCase | lower}}Data, query, args...)
 		if err != nil {
 			return err
 		}
 
-		{{$e.From | camelCase | lower}}Map := make(map[int][]*{{$.Name | camelCase}}Edge{{$e.From | camelCase}}Data)
+		{{$e.Name | camelCase | lower}}Map := make(map[int][]*{{$.Name | camelCase}}Edge{{$e.Name | camelCase}}Data)
 
-		var withData []*{{$.Name | camelCase}}Edge{{$e.From | camelCase}}Data
+		var withData []*{{$.Name | camelCase}}Edge{{$e.Name | camelCase}}Data
 		var lastId int
-		for i, a := range {{$e.From | camelCase | lower}}Data {
+		for i, a := range {{$e.Name | camelCase | lower}}Data {
 			if i == 0 {
 				withData = append(withData, a)
 				lastId = a.{{$e.Ref | camelCase}}
@@ -195,7 +455,7 @@ func (q *{{$.Name | camelCase}}Query) queryWith(ctx context.Context, data []*{{$
 			// 下一条
 			{
 				// 添加数据到map中
-				{{$e.From | camelCase | lower}}Map[lastId] = append({{$e.From | camelCase | lower}}Map[lastId], withData...)
+				{{$e.Name | camelCase | lower}}Map[lastId] = append({{$e.Name | camelCase | lower}}Map[lastId], withData...)
 				// 更新lastId
 				lastId = a.{{$e.Ref | camelCase}}
 				// 清空data，并传入当前值
@@ -205,7 +465,7 @@ func (q *{{$.Name | camelCase}}Query) queryWith(ctx context.Context, data []*{{$
 		}
 
 		for _, d := range data {
-			d.{{$e.From | camelCase}}List = {{$e.From | camelCase | lower}}Map[d.Id]
+			d.{{$e.Name | camelCase}}List = {{$e.Name | camelCase | lower}}Map[d.Id]
 		}
 	}
 	{{- end -}}

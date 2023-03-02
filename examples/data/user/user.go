@@ -12,12 +12,12 @@ const (
 	ColumnUsername = "username"
 	ColumnNikeName = "nike_name"
 	ColumnRoleId   = "role_id"
-	// EdgeRoleTableName 用户与角色关系
+	// EdgeRoleTableName role
 	EdgeRoleTableName       = "role"
 	EdgeRoleLinkField       = "role_id"
 	EdgeRoleRefField        = "id"
 	EdgeRoleDisplayRoleName = "role_name"
-	// RoleEdgeAccessTableName 角色与权限关系
+	// RoleEdgeAccessTableName access
 	RoleEdgeAccessTableName         = "access"
 	RoleEdgeAccessLinkField         = "access_id"
 	RoleEdgeAccessRefField          = "id"
@@ -82,7 +82,7 @@ func (c *UserClient) Query() *UserQuery {
 		cols = append(cols, userTable.C(column))
 	}
 	return &UserQuery{
-		Selector: sql.Dialect(c.direct).Select(cols...).From(userTable),
+		selector: sql.Dialect(c.direct).Select(cols...).From(userTable),
 		db:       c.db,
 		with:     map[string]struct{}{},
 	}

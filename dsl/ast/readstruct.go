@@ -148,7 +148,7 @@ func readTableEdges(table *gen.Table, args []ast.Expr) {
 				for _, fg := range call.Args {
 					switch a := fg.(type) {
 					case *ast.BasicLit:
-						edge.Desc = getStringValue(a)
+						edge.Name = getStringValue(a)
 					case *ast.CallExpr:
 						readEdgeFn(edge, a)
 					}
@@ -235,7 +235,7 @@ func readEdgeRelation(e *gen.Edge, args []ast.Expr) {
 				for _, fg := range call.Args {
 					switch a := fg.(type) {
 					case *ast.BasicLit:
-						edge.Desc = getStringValue(a)
+						edge.Name = getStringValue(a)
 					case *ast.CallExpr:
 						readEdgeFn(edge, a)
 					}

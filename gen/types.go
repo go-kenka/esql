@@ -115,7 +115,7 @@ var EdgeTypeNameMap = map[string]dsl.EdgeType{
 }
 
 type Edge struct {
-	Desc     string
+	Name     string
 	Type     dsl.EdgeType
 	Link     string
 	From     string

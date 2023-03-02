@@ -26,7 +26,7 @@ var _ = Table("role",
 		),
 	),
 	Edges(
-		Edge("角色与用户关系（1对n）",
+		Edge("user",
 			Link("id"),
 			From("user"),
 			Ref("role_id"),

@@ -18,20 +18,20 @@ TableName    = "{{.Name}}"
     Column{{.Name | camelCase }} = "{{.Name}}"
 {{- end -}}
 {{- range $i,$e := .Edges}}
-    // Edge{{$e.From | camelCase }}TableName {{$e.Desc}}
-    Edge{{$e.From | camelCase }}TableName   = "{{$e.From}}"
-    Edge{{$e.From | camelCase }}LinkField   = "{{$e.Link}}"
-    Edge{{$e.From | camelCase }}RefField    = "{{$e.Ref}}"
+    // Edge{{$e.Name | camelCase }}TableName {{$e.Name}}
+    Edge{{$e.Name | camelCase }}TableName   = "{{$e.From}}"
+    Edge{{$e.Name | camelCase }}LinkField   = "{{$e.Link}}"
+    Edge{{$e.Name | camelCase }}RefField    = "{{$e.Ref}}"
     {{- range $j,$d := $e.Display}}
-        Edge{{$e.From | camelCase }}Display{{$d.Name | camelCase }} = "{{$d.Name}}"
+        Edge{{$e.Name | camelCase }}Display{{$d.Name | camelCase }} = "{{$d.Name}}"
     {{- end -}}
     {{- range $j,$e1 := $e.Relation }}
-        // {{$e.From | camelCase}}Edge{{$e1.From | camelCase }}TableName {{$e1.Desc}}
-        {{$e.From | camelCase}}Edge{{$e1.From | camelCase }}TableName   = "{{$e1.From}}"
-        {{$e.From | camelCase}}Edge{{$e1.From | camelCase }}LinkField   = "{{$e1.Link}}"
-        {{$e.From | camelCase}}Edge{{$e1.From | camelCase }}RefField    = "{{$e1.Ref}}"
+        // {{$e.From | camelCase}}Edge{{$e1.Name | camelCase }}TableName {{$e1.Name}}
+        {{$e.From | camelCase}}Edge{{$e1.Name | camelCase }}TableName   = "{{$e1.From}}"
+        {{$e.From | camelCase}}Edge{{$e1.Name | camelCase }}LinkField   = "{{$e1.Link}}"
+        {{$e.From | camelCase}}Edge{{$e1.Name | camelCase }}RefField    = "{{$e1.Ref}}"
         {{- range $j,$d := $e1.Display}}
-            {{$e.From | camelCase}}Edge{{$e1.From | camelCase }}Display{{$d.Name | camelCase }} = "{{$d.Name}}"
+            {{$e.From | camelCase}}Edge{{$e1.Name | camelCase }}Display{{$d.Name | camelCase }} = "{{$d.Name}}"
         {{- end -}}
     {{end}}
 {{- end}}
@@ -39,10 +39,13 @@ TableName    = "{{.Name}}"
 
 var (
 {{.Name | camelCase | lower}}Table        = sql.Table(TableName).As("t1")
+{{- $count := 1 }}
 {{- range $i,$e := .Edges}}
-    edge{{$e.From | camelCase }}Table      = sql.Table(Edge{{$e.From | camelCase }}TableName).As("t{{add $i 2}}")
+    {{- $count = add $count 1 }}
+    edge{{$e.Name | camelCase }}Table      = sql.Table(Edge{{$e.Name | camelCase }}TableName).As("t{{$count}}")
     {{- range $j,$e1 := $e.Relation }}
-        {{$e.From | camelCase | lower}}Edge{{$e1.From | camelCase }}Table  = sql.Table({{$e.From | camelCase}}Edge{{$e1.From | camelCase }}TableName)
+        {{- $count = add $count 1 }}
+        {{$e.From | camelCase | lower}}Edge{{$e1.Name | camelCase }}Table  = sql.Table({{$e.From | camelCase}}Edge{{$e1.Name | camelCase }}TableName).As("t{{$count}}")
     {{- end -}}
 {{- end}}
 )
@@ -61,9 +64,9 @@ db     esql.Driver
 type {{.Name | camelCase}}Data struct {
 {{- range $i,$e := .Edges}}
     {{- if or (eq $e.Type 1) (eq $e.Type 3)}}
-        {{$e.From | camelCase}}List []*{{$.Name | camelCase}}Edge{{$e.From | camelCase}}Data
-    {{- else -}}
-        *{{$.Name | camelCase}}Edge{{$e.From | camelCase}}Data
+        {{$e.Name | camelCase }}List []*{{$.Name | camelCase}}Edge{{$e.Name | camelCase }}Data
+    {{- else}}
+        *{{$.Name | camelCase}}Edge{{$e.Name | camelCase }}Data
     {{- end}}
 {{- end}}
 {{range $i,$f := .Fields}}
@@ -72,19 +75,19 @@ type {{.Name | camelCase}}Data struct {
 }
 
 {{range $i,$e := .Edges}}
-    func (d *{{$.Name | camelCase}}Data) Has{{$e.From | camelCase}}() bool {
+    func (d *{{$.Name | camelCase}}Data) Has{{$e.Name | camelCase }}() bool {
     {{- if or (eq $e.Type 1) (eq $e.Type 3)}}
-        return d.{{$e.From | camelCase}}List != nil
+        return d.{{$e.Name | camelCase }}List != nil
     {{- else -}}
-        return d.{{$.Name | camelCase}}Edge{{$e.From | camelCase}}Data != nil
+        return d.{{$.Name | camelCase}}Edge{{$e.Name | camelCase}}Data != nil
     {{- end}}
     }
 {{end}}
 
 {{range $i,$e := .Edges}}
-    type {{$.Name | camelCase}}Edge{{$e.From | camelCase}}Data struct {
+    type {{$.Name | camelCase}}Edge{{$e.Name | camelCase }}Data struct {
     {{- range $j,$e1 := $e.Relation }}
-        *{{$e.From | camelCase}}Edge{{$e1.From | camelCase}}Data
+        *{{$e.From | camelCase}}Edge{{$e1.Name | camelCase }}Data
     {{- end}}
     {{$e.Ref | camelCase }} int `db:"{{$e.Ref}}"` // {{$e.Ref}}
     {{- range $k,$d := $e.Display}}
@@ -95,12 +98,12 @@ type {{.Name | camelCase}}Data struct {
 
 {{range $i,$e := .Edges}}
     {{- range $j,$e1 := $e.Relation }}
-        func (d *{{$.Name | camelCase}}Edge{{$e.From | camelCase}}Data) Has{{$e1.From | camelCase}}() bool {
-        return d.{{$e.From | camelCase}}Edge{{$e1.From | camelCase}}Data != nil
+        func (d *{{$.Name | camelCase}}Edge{{$e.Name | camelCase}}Data) Has{{$e1.Name | camelCase}}() bool {
+        return d.{{$e.From | camelCase}}Edge{{$e1.Name | camelCase}}Data != nil
         }
 
-        type {{$e.From | camelCase}}Edge{{$e1.From | camelCase}}Data struct {
-        {{- range $k,$d := $e1.Display -}}
+        type {{$e.From | camelCase}}Edge{{$e1.Name | camelCase}}Data struct {
+        {{- range $k,$d := $e1.Display }}
             {{$d.Name | camelCase }} {{$d.TypeInfo | goType}} `db:"{{$d.Name}}"` // {{$d.Comment}}
         {{- end}}
         }
@@ -120,7 +123,7 @@ for _, column := range Columns {
 cols = append(cols, {{.Name | camelCase | lower}}Table.C(column))
 }
 return &{{.Name | camelCase}}Query{
-Selector: sql.Dialect(c.direct).Select(cols...).From({{.Name | camelCase | lower}}Table),
+selector: sql.Dialect(c.direct).Select(cols...).From({{.Name | camelCase | lower}}Table),
 db:       c.db,
 with: map[string]struct{}{},
 }

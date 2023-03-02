@@ -1,7 +1,7 @@
 package dsl
 
 type EdgeExpr struct {
-	Desc     string
+	Name     string
 	Type     EdgeType
 	Link     string
 	From     string
@@ -12,9 +12,9 @@ type EdgeExpr struct {
 
 type EdgeFn func(e *EdgeExpr)
 
-func Edge(desc string, fns ...EdgeFn) *EdgeExpr {
+func Edge(name string, fns ...EdgeFn) *EdgeExpr {
 	t := &EdgeExpr{
-		Desc: desc,
+		Name: name,
 	}
 
 	for _, fn := range fns {

@@ -8,9 +8,268 @@ import (
 )
 
 type RoleQuery struct {
-	*sql.Selector
-	db   esql.Driver
-	with map[string]struct{}
+	selector *sql.Selector
+	db       esql.Driver
+	with     map[string]struct{}
+}
+
+// Select changes the columns selection of the SELECT statement.
+// Empty selection means all columns *.
+func (q *RoleQuery) Select(columns ...string) *RoleQuery {
+	q.selector.Select(columns...)
+	return q
+}
+
+// AppendSelect appends additional columns to the SELECT statement.
+func (q *RoleQuery) AppendSelect(columns ...string) *RoleQuery {
+	q.selector.AppendSelect(columns...)
+	return q
+}
+
+// SelectExpr changes the columns selection of the SELECT statement
+// with custom list of expressions.
+func (q *RoleQuery) SelectExpr(exprs ...sql.Querier) *RoleQuery {
+	q.selector.SelectExpr(exprs...)
+	return q
+}
+
+// AppendSelectExpr appends additional expressions to the SELECT statement.
+func (q *RoleQuery) AppendSelectExpr(exprs ...sql.Querier) *RoleQuery {
+	q.selector.AppendSelectExpr(exprs...)
+	return q
+}
+
+// AppendSelectExprAs appends additional expressions to the SELECT statement with the given name.
+func (q *RoleQuery) AppendSelectExprAs(expr sql.Querier, as string) *RoleQuery {
+	q.selector.AppendSelectExprAs(expr, as)
+	return q
+}
+
+// From sets the source of `FROM` clause.
+func (q *RoleQuery) From(t sql.TableView) *RoleQuery {
+	q.selector.From(t)
+	return q
+}
+
+// AppendFrom appends a new TableView to the `FROM` clause.
+func (q *RoleQuery) AppendFrom(t sql.TableView) *RoleQuery {
+	q.selector.AppendFrom(t)
+	return q
+}
+
+// FromExpr sets the expression of `FROM` clause.
+func (q *RoleQuery) FromExpr(x sql.Querier) *RoleQuery {
+	q.selector.FromExpr(x)
+	return q
+}
+
+// AppendFromExpr appends an expression (Queries) to the `FROM` clause.
+func (q *RoleQuery) AppendFromExpr(x sql.Querier) *RoleQuery {
+	q.selector.AppendFromExpr(x)
+	return q
+}
+
+// Distinct adds the DISTINCT keyword to the `SELECT` statement.
+func (q *RoleQuery) Distinct() *RoleQuery {
+	q.selector.Distinct()
+	return q
+}
+
+// SetDistinct sets explicitly if the returned rows are distinct or indistinct.
+func (q *RoleQuery) SetDistinct(v bool) *RoleQuery {
+	q.selector.SetDistinct(v)
+	return q
+}
+
+// Limit adds the `LIMIT` clause to the `SELECT` statement.
+func (q *RoleQuery) Limit(limit int) *RoleQuery {
+	q.selector.Limit(limit)
+	return q
+}
+
+// Offset adds the `OFFSET` clause to the `SELECT` statement.
+func (q *RoleQuery) Offset(offset int) *RoleQuery {
+	q.selector.Offset(offset)
+	return q
+}
+
+// Where sets or appends the given predicate to the statement.
+func (q *RoleQuery) Where(p *sql.Predicate) *RoleQuery {
+	q.selector.Where(p)
+	return q
+}
+
+// SetP sets explicitly the predicate function for the selector and clear its previous state.
+func (q *RoleQuery) SetP(p *sql.Predicate) *RoleQuery {
+	q.selector.SetP(p)
+	return q
+}
+
+// FromSelect copies the predicate from a selector.
+func (q *RoleQuery) FromSelect(s2 *sql.Selector) *RoleQuery {
+	q.selector.FromSelect(s2)
+	return q
+}
+
+// Not sets the next coming predicate with not.
+func (q *RoleQuery) Not() *RoleQuery {
+	q.selector.Not()
+	return q
+}
+
+// Or sets the next coming predicate with OR operator (disjunction).
+func (q *RoleQuery) Or() *RoleQuery {
+	q.selector.Or()
+	return q
+}
+
+// Join appends a `JOIN` clause to the statement.
+func (q *RoleQuery) Join(t sql.TableView) *RoleQuery {
+	q.selector.Join(t)
+	return q
+}
+
+// LeftJoin appends a `LEFT JOIN` clause to the statement.
+func (q *RoleQuery) LeftJoin(t sql.TableView) *RoleQuery {
+	q.selector.LeftJoin(t)
+	return q
+}
+
+// RightJoin appends a `RIGHT JOIN` clause to the statement.
+func (q *RoleQuery) RightJoin(t sql.TableView) *RoleQuery {
+	q.selector.RightJoin(t)
+	return q
+}
+
+// FullJoin appends a `FULL JOIN` clause to the statement.
+func (q *RoleQuery) FullJoin(t sql.TableView) *RoleQuery {
+	q.selector.FullJoin(t)
+	return q
+}
+
+// Union appends the UNION (DISTINCT) clause to the query.
+func (q *RoleQuery) Union(t sql.TableView) *RoleQuery {
+	q.selector.Union(t)
+	return q
+}
+
+// UnionAll appends the UNION ALL clause to the query.
+func (q *RoleQuery) UnionAll(t sql.TableView) *RoleQuery {
+	q.selector.UnionAll(t)
+	return q
+}
+
+// Except appends the EXCEPT clause to the query.
+func (q *RoleQuery) Except(t sql.TableView) *RoleQuery {
+	q.selector.Except(t)
+	return q
+}
+
+// ExceptAll appends the EXCEPT ALL clause to the query.
+func (q *RoleQuery) ExceptAll(t sql.TableView) *RoleQuery {
+	q.selector.ExceptAll(t)
+	return q
+}
+
+// Intersect appends the INTERSECT clause to the query.
+func (q *RoleQuery) Intersect(t sql.TableView) *RoleQuery {
+	q.selector.Intersect(t)
+	return q
+}
+
+// IntersectAll appends the INTERSECT ALL clause to the query.
+func (q *RoleQuery) IntersectAll(t sql.TableView) *RoleQuery {
+	q.selector.IntersectAll(t)
+	return q
+}
+
+// Prefix prefixes the query with list of queries.
+func (q *RoleQuery) Prefix(queries ...sql.Querier) *RoleQuery {
+	q.selector.Prefix(queries...)
+	return q
+}
+
+// OnP sets or appends the given predicate for the `ON` clause of the statement.
+func (q *RoleQuery) OnP(p *sql.Predicate) *RoleQuery {
+	q.selector.OnP(p)
+	return q
+}
+
+// On sets the `ON` clause for the `JOIN` operation.
+func (q *RoleQuery) On(c1, c2 string) *RoleQuery {
+	q.selector.On(c1, c2)
+	return q
+}
+
+// As give this selection an alias.
+func (q *RoleQuery) As(alias string) *RoleQuery {
+	q.selector.As(alias)
+	return q
+}
+
+// Count sets the Select statement to be a `SELECT COUNT(*)`.
+func (q *RoleQuery) Count(columns ...string) *RoleQuery {
+	q.selector.Count(columns...)
+	return q
+}
+
+// For sets the lock configuration for suffixing the `SELECT`
+// statement with the `FOR [SHARE | UPDATE] ...` clause.
+func (q *RoleQuery) For(l sql.LockStrength, opts ...sql.LockOption) *RoleQuery {
+	q.selector.For(l, opts...)
+	return q
+}
+
+// ForShare sets the lock configuration for suffixing the
+// `SELECT` statement with the `FOR SHARE` clause.
+func (q *RoleQuery) ForShare(opts ...sql.LockOption) *RoleQuery {
+	q.selector.ForShare(opts...)
+	return q
+}
+
+// ForUpdate sets the lock configuration for suffixing the
+// `SELECT` statement with the `FOR UPDATE` clause.
+func (q *RoleQuery) ForUpdate(opts ...sql.LockOption) *RoleQuery {
+	q.selector.ForUpdate(opts...)
+	return q
+}
+
+// OrderBy appends the `ORDER BY` clause to the `SELECT` statement.
+func (q *RoleQuery) OrderBy(columns ...string) *RoleQuery {
+	q.selector.OrderBy(columns...)
+	return q
+}
+
+// OrderExpr appends the `ORDER BY` clause to the `SELECT`
+// statement with custom list of expressions.
+func (q *RoleQuery) OrderExpr(exprs ...sql.Querier) *RoleQuery {
+	q.selector.OrderExpr(exprs...)
+	return q
+}
+
+// ClearOrder clears the ORDER BY clause to be empty.
+func (q *RoleQuery) ClearOrder() *RoleQuery {
+	q.selector.ClearOrder()
+	return q
+}
+
+// GroupBy appends the `GROUP BY` clause to the `SELECT` statement.
+func (q *RoleQuery) GroupBy(columns ...string) *RoleQuery {
+	q.selector.GroupBy(columns...)
+	return q
+}
+
+// Having appends a predicate for the `HAVING` clause.
+func (q *RoleQuery) Having(p *sql.Predicate) *RoleQuery {
+	q.selector.Having(p)
+	return q
+}
+
+func (q *RoleQuery) Query() (string, []any) {
+	return q.selector.Query()
+}
+func (q *RoleQuery) C(column string) string {
+	return q.selector.C(column)
 }
 
 func (q *RoleQuery) First(ctx context.Context) (*RoleData, error) {
