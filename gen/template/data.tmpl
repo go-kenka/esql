@@ -38,14 +38,14 @@ TableName    = "{{.Name}}"
 )
 
 var (
-{{.Name | camelCase | lower}}Table        = sql.Table(TableName).As("t1")
+{{.Name | camelCase }}Table        = sql.Table(TableName).As("t1")
 {{- $count := 1 }}
 {{- range $i,$e := .Edges}}
     {{- $count = add $count 1 }}
-    edge{{$e.Name | camelCase }}Table      = sql.Table(Edge{{$e.Name | camelCase }}TableName).As("t{{$count}}")
+    Edge{{$e.Name | camelCase }}Table      = sql.Table(Edge{{$e.Name | camelCase }}TableName).As("t{{$count}}")
     {{- range $j,$e1 := $e.Relation }}
         {{- $count = add $count 1 }}
-        {{$e.From | camelCase | lower}}Edge{{$e1.Name | camelCase }}Table  = sql.Table({{$e.From | camelCase}}Edge{{$e1.Name | camelCase }}TableName).As("t{{$count}}")
+        {{$e.From | camelCase }}Edge{{$e1.Name | camelCase }}Table  = sql.Table({{$e.From | camelCase}}Edge{{$e1.Name | camelCase }}TableName).As("t{{$count}}")
     {{- end -}}
 {{- end}}
 )
@@ -120,10 +120,10 @@ db:     db,
 func (c *{{.Name | camelCase}}Client) Query() *{{.Name | camelCase}}Query {
 var cols []string
 for _, column := range Columns {
-cols = append(cols, {{.Name | camelCase | lower}}Table.C(column))
+cols = append(cols, {{.Name | camelCase }}Table.C(column))
 }
 return &{{.Name | camelCase}}Query{
-selector: sql.Dialect(c.direct).Select(cols...).From({{.Name | camelCase | lower}}Table),
+selector: sql.Dialect(c.direct).Select(cols...).From({{.Name | camelCase }}Table),
 db:       c.db,
 with: map[string]struct{}{},
 }

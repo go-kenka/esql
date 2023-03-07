@@ -268,8 +268,23 @@ func (q *RoleQuery) Having(p *sql.Predicate) *RoleQuery {
 func (q *RoleQuery) Query() (string, []any) {
 	return q.selector.Query()
 }
+
 func (q *RoleQuery) C(column string) string {
 	return q.selector.C(column)
+}
+
+func (q *RoleQuery) Clone() *RoleQuery {
+
+	with := make(map[string]struct{})
+	for k, v := range q.with {
+		with[k] = v
+	}
+
+	return &RoleQuery{
+		selector: q.selector.Clone(),
+		db:       q.db,
+		with:     with,
+	}
 }
 
 func (q *RoleQuery) First(ctx context.Context) (*RoleData, error) {

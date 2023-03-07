@@ -28,7 +28,7 @@ type Client struct {
 
 // NewClient .
 func NewClient(db *sqlx.DB) *Client {
-	drv := migrate.Driver(db)
+	drv := migrate.Driver(db.DriverName(), db.DB)
 	return &Client{
 		DB:      db,
 		Builder: sql.Dialect(db.DriverName()),

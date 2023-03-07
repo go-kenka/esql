@@ -3,9 +3,9 @@ package migrate
 
 import (
 	"context"
+	stdSql "database/sql"
 	"entgo.io/ent/dialect/sql"
 	"fmt"
-	"github.com/jmoiron/sqlx"
 	"io"
 
 	"entgo.io/ent/dialect"
@@ -33,9 +33,9 @@ var (
 	WithForeignKeys = schema.WithForeignKeys
 )
 
-// Driver use sqlx.DB gen Driver
-func Driver(db *sqlx.DB) *sql.Driver {
-	return sql.NewDriver(db.DriverName(), sql.Conn{ExecQuerier: db})
+// Driver use sql.DB gen Driver
+func Driver(driver string, db *stdSql.DB) *sql.Driver {
+	return sql.NewDriver(driver, sql.Conn{ExecQuerier: db})
 }
 
 // Schema is the API for creating, migrating and dropping a schema.

@@ -273,6 +273,18 @@ func (q *{{.Name | camelCase}}Query) C(column string) string {
 	return q.selector.C(column)
 }
 
+func (q *{{.Name | camelCase}}Query) Clone() *{{.Name | camelCase}}Query {
+	with := make(map[string]struct{})
+	for k, v := range q.with {
+		with[k] = v
+	}
+	return &{{.Name | camelCase}}Query{
+		selector: q.selector.Clone(),
+		db:       q.db,
+		with:     with,
+	}
+}
+
 func (q *{{.Name | camelCase}}Query) First(ctx context.Context) (*{{.Name | camelCase}}Data, error) {
 	query, args := q.Limit(1).Query()
 	var data {{.Name | camelCase}}Data
@@ -373,13 +385,13 @@ func (q *{{.Name | camelCase}}Query) ExistX(ctx context.Context) (bool, error) {
 func (q *{{$.Name | camelCase}}Query) With{{$e.Name | camelCase}}() *{{$.Name | camelCase}}Query {
 	// 添加Display字段
 	{{- range $j,$d := $e.Display}}
-		q.AppendSelect(edge{{$e.Name | camelCase }}Table.C(Edge{{$e.Name | camelCase }}Display{{$d.Name | camelCase }}))
+		q.AppendSelect(Edge{{$e.Name | camelCase }}Table.C(Edge{{$e.Name | camelCase }}Display{{$d.Name | camelCase }}))
 	{{- end }}
 	// 添加关系（左连接）
-	q.LeftJoin(edge{{$e.Name | camelCase }}Table).
+	q.LeftJoin(Edge{{$e.Name | camelCase }}Table).
 	On(
 	q.C( Edge{{$e.Name | camelCase }}LinkField),
-	edge{{$e.Name | camelCase }}Table.C(Edge{{$e.Name | camelCase }}RefField),
+	Edge{{$e.Name | camelCase }}Table.C(Edge{{$e.Name | camelCase }}RefField),
 	)
 
 
@@ -391,8 +403,8 @@ func (q *{{$.Name | camelCase}}Query) With{{$e.Name | camelCase}}() *{{$.Name | 
 		// 添加关系（左连接）
 		q.LeftJoin({{$e.From | camelCase | lower}}Edge{{$e1.Name | camelCase }}Table).
 		On(
-		edge{{$e.Name | camelCase }}Table.C({{$e.From | camelCase}}Edge{{$e1.Name | camelCase }}LinkField),
-		{{$e.From | camelCase | lower}}Edge{{$e1.Name | camelCase }}Table.C({{$e.From | camelCase}}Edge{{$e1.Name | camelCase }}RefField),
+		Edge{{$e.Name | camelCase }}Table.C({{$e.From | camelCase}}Edge{{$e1.Name | camelCase }}LinkField),
+		{{$e.From | camelCase }}Edge{{$e1.Name | camelCase }}Table.C({{$e.From | camelCase}}Edge{{$e1.Name | camelCase }}RefField),
 		)
 	{{- end}}
 	return q
@@ -405,12 +417,12 @@ func (q *{{$.Name | camelCase}}Query) With{{$e.Name | camelCase}}List() *{{$.Nam
 
 func (q *{{$.Name | camelCase}}Query) {{$e.Name | camelCase}}Query() *sql.Selector {
 	var cols []string
-	cols = append(cols, edge{{$e.Name | camelCase}}Table.C(Edge{{$e.Name | camelCase}}RefField))
+	cols = append(cols, Edge{{$e.Name | camelCase}}Table.C(Edge{{$e.Name | camelCase}}RefField))
 	{{- range $j,$d := $e.Display}}
-	cols = append(cols, edge{{$e.Name | camelCase}}Table.C(Edge{{$e.Name | camelCase}}Display{{$d.Name | camelCase}}))
+	cols = append(cols, Edge{{$e.Name | camelCase}}Table.C(Edge{{$e.Name | camelCase}}Display{{$d.Name | camelCase}}))
 	{{end}}
 
-	return sql.Dialect(q.db.DriverName()).Select(cols...).From(edge{{$e.Name | camelCase}}Table)
+	return sql.Dialect(q.db.DriverName()).Select(cols...).From(Edge{{$e.Name | camelCase}}Table)
 }
 {{- end -}}
 {{- end }}
