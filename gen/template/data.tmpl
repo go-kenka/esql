@@ -130,7 +130,12 @@ with: map[string]struct{}{},
 }
 
 func (c *{{.Name | camelCase}}Client) Create() *{{.Name | camelCase}}Create {
+var cols []string
+for _, column := range Columns {
+cols = append(cols, {{.Name | camelCase }}Table.C(column))
+}
 return &{{.Name | camelCase}}Create{
+selector: sql.Dialect(c.direct).Select(cols...).From({{.Name | camelCase }}Table),
 builder: sql.Dialect(c.direct).Insert(TableName),
 db:      c.db,
 data:    &{{.Name | camelCase}}Data{},
